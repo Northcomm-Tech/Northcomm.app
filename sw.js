@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-v1";
+const CACHE = "northcomm-specs-v2";
 const ASSETS = [
   "./",
   "./index.html",
