@@ -1,5 +1,5 @@
 <title>Northcomm Specs</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#353535">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,8 +22,10 @@
   :root[data-theme="light"]{ --paper:#ffffff; --mist:#f4f4f4; --line:#e4e2df; --steel:#8a8a88; --text:#2b2b2b; --ink:#353535; }
 
   *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   html,body{height:100%}
-  body{font-family:var(--sans);background:var(--mist);color:var(--text);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+  body{font-family:var(--sans);background:var(--mist);color:var(--text);-webkit-font-smoothing:antialiased;overscroll-behavior:none;touch-action:manipulation}
+  .scanner{touch-action:none;overscroll-behavior:none}
   .app{max-width:440px;margin:0 auto;min-height:100dvh;background:var(--paper);display:flex;flex-direction:column;position:relative;box-shadow:0 0 40px rgba(0,0,0,.06)}
   .label{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--steel)}
 
@@ -537,6 +539,11 @@ $("manualInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitManual(
 if("serviceWorker"in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
+
+/* lock zoom + overscroll bounce */
+document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
+document.addEventListener("gesturestart",e=>e.preventDefault());
+$("scanner").addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 
 initAuth();
 </script>
