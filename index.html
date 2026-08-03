@@ -274,7 +274,7 @@ const CATALOG = {
 };
 
 const $=id=>document.getElementById(id);
-const views={home:$("home"),result:$("result"),samples:$("samplesView")};
+const views={home:$("home"),result:$("result"),samples:$("samplesView"),login:$("login")};
 function show(name){for(const k in views)views[k].classList.toggle("hidden",k!==name);window.scrollTo(0,0);}
 
 /* theme toggle */
