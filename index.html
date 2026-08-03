@@ -170,7 +170,7 @@
   </div>
 
   <!-- LOGIN -->
-  <div class="view hidden" id="login">
+  <div class="view" id="login">
     <div class="login">
       <div class="mark"><img src="icon-192.png" alt="Northcomm"></div>
       <h1 id="loginTitle">Sign in</h1>
@@ -288,17 +288,18 @@ $("themeBtn").onclick=()=>{
 const SUPA_URL="https://ikgnhieorzjaxtjoneye.supabase.co", SUPA_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZ25oaWVvcnpqYXh0am9uZXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2ODAzMjEsImV4cCI6MjEwMTI1NjMyMX0.j5mExwdSlzS-2jado_5T1XycAp1kO_2Vtz9ZEirV09s";
 const supa=window.supabase.createClient(SUPA_URL,SUPA_ANON);
 let session=null, authMode="signin";
-const CACHE_KEY="northcomm_cache";
 let scans=[];
-function cacheGet(){try{return JSON.parse(localStorage.getItem(CACHE_KEY))||[]}catch(e){return[]}}
-function cacheSet(a){try{localStorage.setItem(CACHE_KEY,JSON.stringify(a))}catch(e){}}
+function cacheKey(){return "northcomm_cache_"+((session&&session.user&&session.user.id)||"anon");}
+function cacheGet(){try{return JSON.parse(localStorage.getItem(cacheKey()))||[]}catch(e){return[]}}
+function cacheSet(a){try{localStorage.setItem(cacheKey(),JSON.stringify(a))}catch(e){}}
 
 async function loadScans(){
   if(session){
     try{
-      const {data,error}=await supa.from("northcomm_scans").select("code,title,scanned_at").order("scanned_at",{ascending:false}).limit(8);
+      const {data,error}=await supa.from("northcomm_scans").select("code,title,scanned_at").order("scanned_at",{ascending:false});
       if(error)throw error;
-      scans=data||[];cacheSet(scans);
+      if(data&&data.length){scans=data.slice(0,8);cacheSet(scans);}
+      else{scans=cacheGet();}
     }catch(e){scans=cacheGet();}
   }else{scans=cacheGet();}
   renderRecent();
@@ -359,10 +360,14 @@ $("password").addEventListener("keydown",e=>{if(e.key==="Enter")doAuth();});
 $("swapMode").onclick=()=>setAuthMode(authMode==="signin"?"signup":"signin");
 $("signOutBtn").onclick=async()=>{await supa.auth.signOut();};
 async function initAuth(){
-  const {data}=await supa.auth.getSession();
-  session=data.session;reflectAuth();
-  supa.auth.onAuthStateChange((_e,s)=>{const was=!!session;session=s;if(was!==!!s||!s)reflectAuth();});
+  try{
+    const {data}=await supa.auth.getSession();
+    session=data.session;
+  }catch(e){session=null;}
+  reflectAuth();
+  try{supa.auth.onAuthStateChange((_e,s)=>{const was=!!session;session=s;if(was!==!!s||!s)reflectAuth();});}catch(e){}
 }
+window.addEventListener("error",()=>{try{document.getElementById("login").classList.remove("hidden");}catch(e){}});
 
 /* result render */
 function openResult(code){

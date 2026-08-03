@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-v4";
+const CACHE = "northcomm-specs-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -29,15 +29,26 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-  if (e.request.method !== "GET") return;
-  e.respondWith(
-    caches.match(e.request).then(hit => {
-      if (hit) return hit;
-      return fetch(e.request).then(res => {
+  const req = e.request;
+  if (req.method !== "GET") return;
+  const isHTML = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
+  if (isHTML) {
+    // network-first for the app shell so updates always come through when online
+    e.respondWith(
+      fetch(req).then(res => {
         const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
         return res;
-      }).catch(() => hit);
-    })
+      }).catch(() => caches.match(req).then(h => h || caches.match("./index.html")))
+    );
+    return;
+  }
+  // cache-first for static assets (icons, libs)
+  e.respondWith(
+    caches.match(req).then(hit => hit || fetch(req).then(res => {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+      return res;
+    }).catch(() => hit))
   );
 });
