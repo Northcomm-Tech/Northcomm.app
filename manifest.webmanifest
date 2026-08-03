@@ -1,6 +1,6 @@
 {
   "name": "Northcomm Specs",
-  "short_name": "Specs",
+  "short_name": "Northcomm Specs",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#353535",

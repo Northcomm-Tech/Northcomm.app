@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-v2";
+const CACHE = "northcomm-specs-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./icon-180.png",
   "./icon-192.png",
   "./icon-512.png",
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
   "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js",
   "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
