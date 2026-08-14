@@ -272,6 +272,14 @@ const CATALOG = {
     tags:["Interface","Audio","Harness"],
     desc:"Multi-conductor interface harness bridging Telex dispatch consoles to Motorola APX radio systems. Molded strain relief and individually shielded audio pairs.",
     specs:[["Type","Interface harness"],["Conductors","8, shielded pairs"],["Length","72 in"],["Radio system","Motorola APX"],["Console","Telex IP-224"],["CAGE code","8J9L6"]]
+  },
+  "NC-121483": {
+    part:"NC-121483", serial:"NC-121483",
+    title:"RF Cable Assembly Sweep Report",
+    file:"NC-121483.pdf", pdfUrl:"pdfs/NC-121483.pdf",
+    tags:["PASS","Swept-tested","50 &#937;"],
+    desc:"Factory network-analyzer sweep certificate for this serialized assembly. Verified for VSWR and insertion loss from 1 MHz to 6 GHz across the public-safety VHF, UHF and 700&ndash;900 MHz bands. Result: PASS.",
+    specs:[["Result","PASS"],["VSWR @ 155 MHz","1.076"],["VSWR @ 425 MHz","1.093"],["VSWR @ 920 MHz","1.140"],["Insertion loss @ 155 MHz","&minus;0.28 dB"],["Insertion loss @ 920 MHz","&minus;0.77 dB"],["Swept range","1 MHz &ndash; 6 GHz"],["Tested","8/13/2026"]]
   }
 };
 
@@ -374,33 +382,37 @@ window.addEventListener("error",()=>{try{document.getElementById("login").classL
 /* result render */
 function openResult(code){
   stopScan();
-  const rec=CATALOG[code];
+  code=(code||"").trim();
+  const key=code.replace(/\s+/g,"").toUpperCase();
+  const rec=CATALOG[key]||CATALOG[code];
   const box=$("result");box.classList.add("fade");
   if(rec){
     saveScan(rec.part,rec.title);
+    const real=!!rec.pdfUrl;
     box.innerHTML=`
       <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
       <div class="sheet">
         <div class="sheet-head">
-          <div class="k">Spec sheet</div><h2>${rec.title}</h2>
-          <div class="pn">Part #${rec.part}</div>
+          <div class="k">${real?"Test report":"Spec sheet"}</div><h2>${rec.title}</h2>
+          <div class="pn">${real?"Serial #"+rec.serial:"Part #"+rec.part}</div>
         </div>
         <div class="accentbar"></div>
         <div class="filebadge">
           <div class="fi">PDF</div>
-          <div><div class="fn">${rec.part}_spec.pdf</div><div class="fs">Northcomm Technologies &middot; tap download below</div></div>
+          <div><div class="fn">${real?rec.file:rec.part+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies &middot; tap download below"}</div></div>
         </div>
         <div class="doc">
-          <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${t}</span>`).join("")}<span class="pill ghost">Rev A</span></div>
-          <h3>Description</h3><p class="desc">${rec.desc}</p>
-          <h3>Specifications</h3>
+          <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${t}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
+          <h3>${real?"Summary":"Description"}</h3><p class="desc">${rec.desc}</p>
+          <h3>${real?"Key measurements":"Specifications"}</h3>
           <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>
+          ${real?`<object data="${rec.pdfUrl}" type="application/pdf" style="width:100%;height:430px;border:1px solid var(--line);border-radius:12px;margin-top:14px"><p class="desc" style="margin-top:10px">Tap “View full report” to open the PDF.</p></object>`:""}
         </div>
         <div class="docbtns">
-          <button class="btn btn-primary" onclick="downloadPDF('${rec.part}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-            Download PDF
-          </button>
+          ${real
+            ? `<button class="btn btn-primary" onclick="window.open('${rec.pdfUrl}','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</button>
+               <a class="btn btn-ghost" href="${rec.pdfUrl}" download style="text-decoration:none">Download PDF</a>`
+            : `<button class="btn btn-primary" onclick="downloadPDF('${rec.part}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Download PDF</button>`}
           <button class="btn btn-ghost" onclick="startScan()">Scan another</button>
         </div>
       </div>`;
