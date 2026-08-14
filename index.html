@@ -380,12 +380,28 @@ async function initAuth(){
 window.addEventListener("error",()=>{try{document.getElementById("login").classList.remove("hidden");}catch(e){}});
 
 /* result render */
-function openResult(code){
+async function lookupPart(serial){
+  try{
+    const {data,error}=await supa.from("northcomm_parts").select("serial,title,pdf_url,result,specs").eq("serial",serial).maybeSingle();
+    if(error||!data)return null;
+    const specs=Array.isArray(data.specs)?data.specs:[];
+    return {part:data.serial,serial:data.serial,title:data.title||data.serial,
+      file:data.serial+".pdf",pdfUrl:data.pdf_url,
+      tags:[data.result||"On file","Test report"].filter(Boolean),
+      desc:"Factory test report on file for serial "+data.serial+".",specs};
+  }catch(e){return null;}
+}
+async function openResult(code){
   stopScan();
   code=(code||"").trim();
   const key=code.replace(/\s+/g,"").toUpperCase();
-  const rec=CATALOG[key]||CATALOG[code];
+  let rec=CATALOG[key]||CATALOG[code];
   const box=$("result");box.classList.add("fade");
+  if(!rec){
+    box.innerHTML='<div class="msg"><div class="big">Looking up '+key.replace(/</g,"&lt;")+'&hellip;</div><div class="sub">Checking the parts database.</div></div>';
+    show("result");
+    rec=await lookupPart(key);
+  }
   if(rec){
     saveScan(rec.part,rec.title);
     const real=!!rec.pdfUrl;
