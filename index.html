@@ -295,6 +295,7 @@ $("themeBtn").onclick=()=>{
 };
 
 /* --- Supabase auth + scan history --- */
+/* SWAP THESE to Mark's Northcomm Supabase project before transferring the repo */
 const SUPA_URL="https://ikgnhieorzjaxtjoneye.supabase.co", SUPA_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZ25oaWVvcnpqYXh0am9uZXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2ODAzMjEsImV4cCI6MjEwMTI1NjMyMX0.j5mExwdSlzS-2jado_5T1XycAp1kO_2Vtz9ZEirV09s";
 const supa=window.supabase.createClient(SUPA_URL,SUPA_ANON);
 let session=null, authMode="signin";
@@ -385,8 +386,9 @@ async function lookupPart(serial){
     const {data,error}=await supa.from("northcomm_parts").select("serial,title,pdf_url,result,specs").eq("serial",serial).maybeSingle();
     if(error||!data)return null;
     const specs=Array.isArray(data.specs)?data.specs:[];
+    const pdfUrl=data.pdf_url?(/^https?:/i.test(data.pdf_url)?data.pdf_url:SUPA_URL+"/storage/v1/object/public/reports/"+data.pdf_url):null;
     return {part:data.serial,serial:data.serial,title:data.title||data.serial,
-      file:data.serial+".pdf",pdfUrl:data.pdf_url,
+      file:data.serial+".pdf",pdfUrl:pdfUrl,
       tags:[data.result||"On file","Test report"].filter(Boolean),
       desc:"Factory test report on file for serial "+data.serial+".",specs};
   }catch(e){return null;}
