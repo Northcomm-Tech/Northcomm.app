@@ -295,8 +295,8 @@ $("themeBtn").onclick=()=>{
 };
 
 /* --- Supabase auth + scan history --- */
-/* SWAP THESE to Mark's Northcomm Supabase project before transferring the repo */
-const SUPA_URL="https://ikgnhieorzjaxtjoneye.supabase.co", SUPA_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZ25oaWVvcnpqYXh0am9uZXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2ODAzMjEsImV4cCI6MjEwMTI1NjMyMX0.j5mExwdSlzS-2jado_5T1XycAp1kO_2Vtz9ZEirV09s";
+/* Northcomm's own Supabase project (owned by Mark) */
+const SUPA_URL="https://ocassdfsueyxwkpvspym.supabase.co", SUPA_ANON="sb_publishable_AdF68UbmD9I5YShLpPc8UA_mNSnyiNe";
 const supa=window.supabase.createClient(SUPA_URL,SUPA_ANON);
 let session=null, authMode="signin";
 let scans=[];
