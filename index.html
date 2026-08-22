@@ -398,7 +398,7 @@ async function openResult(code){
           <h3>${real?"Summary":"Description"}</h3><p class="desc">${rec.desc}</p>
           <h3>${real?"Key measurements":"Specifications"}</h3>
           <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>
-          ${real?`<object data="${rec.pdfUrl}" type="application/pdf" style="width:100%;height:430px;border:1px solid var(--line);border-radius:12px;margin-top:14px"><p class="desc" style="margin-top:10px">Tap “View full report” to open the PDF.</p></object>`:""}
+          ${real?`<div id="pdfSlot" style="margin-top:14px"><button class="btn btn-ghost" onclick="loadPreview('${rec.pdfUrl}')" style="width:100%">Show report preview</button></div>`:""}
         </div>
         <div class="docbtns">
           ${real
@@ -424,6 +424,17 @@ async function openResult(code){
   show("result");
 }
 function goHome(){stopScan();show("home");}
+/* PDF preview loads only when asked — the reports are large files */
+function loadPreview(url){
+  const slot=document.getElementById("pdfSlot");
+  if(!slot)return;
+  slot.innerHTML='<div class="empty">Loading preview&hellip;</div>';
+  const o=document.createElement("object");
+  o.data=url;o.type="application/pdf";
+  o.style.cssText="width:100%;height:430px;border:1px solid var(--line);border-radius:12px";
+  o.innerHTML='<p class="desc">Tap &ldquo;View full report&rdquo; to open the PDF.</p>';
+  slot.innerHTML="";slot.appendChild(o);
+}
 
 
 /* scanner */
