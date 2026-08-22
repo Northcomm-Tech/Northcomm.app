@@ -398,12 +398,12 @@ async function openResult(code){
           <h3>${real?"Summary":"Description"}</h3><p class="desc">${rec.desc}</p>
           <h3>${real?"Key measurements":"Specifications"}</h3>
           <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>
-          ${real?`<div id="pdfSlot" style="margin-top:14px"><button class="btn btn-ghost" onclick="loadPreview('${rec.pdfUrl}')" style="width:100%">Show report preview</button></div>`:""}
+          ${real?`<div id="pdfSlot" style="margin-top:14px"><button class="btn btn-ghost" onclick="loadPreview('${rec.pdfUrl}')" style="width:100%">${canEmbedPDF?"Show report preview":"Open the PDF"}</button></div>`:""}
         </div>
         <div class="docbtns">
           ${real
-            ? `<button class="btn btn-primary" onclick="window.open('${rec.pdfUrl}','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</button>
-               <a class="btn btn-ghost" href="${rec.pdfUrl}" download style="text-decoration:none">Download PDF</a>`
+            ? `<a class="btn btn-primary" href="${rec.pdfUrl}" target="_blank" rel="noopener" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</a>
+               <a class="btn btn-ghost" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none">Download PDF</a>`
             : `<div class="empty">No PDF on file for this serial yet.</div>`}
           <button class="btn btn-ghost" onclick="startScan()">Scan another</button>
         </div>
@@ -424,16 +424,17 @@ async function openResult(code){
   show("result");
 }
 function goHome(){stopScan();show("home");}
-/* PDF preview loads only when asked — the reports are large files */
+/* Phones cannot render a PDF inside the page, so only desktop gets an inline preview. */
+const canEmbedPDF=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 function loadPreview(url){
   const slot=document.getElementById("pdfSlot");
   if(!slot)return;
+  if(!canEmbedPDF){window.open(url,"_blank","noopener");return;}
   slot.innerHTML='<div class="empty">Loading preview&hellip;</div>';
-  const o=document.createElement("object");
-  o.data=url;o.type="application/pdf";
-  o.style.cssText="width:100%;height:430px;border:1px solid var(--line);border-radius:12px";
-  o.innerHTML='<p class="desc">Tap &ldquo;View full report&rdquo; to open the PDF.</p>';
-  slot.innerHTML="";slot.appendChild(o);
+  const f=document.createElement("iframe");
+  f.src=url;
+  f.style.cssText="width:100%;height:430px;border:1px solid var(--line);border-radius:12px";
+  slot.innerHTML="";slot.appendChild(f);
 }
 
 
