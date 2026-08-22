@@ -361,10 +361,28 @@ async function initAuth(){
 window.addEventListener("error",()=>{try{document.getElementById("login").classList.remove("hidden");}catch(e){}});
 
 /* result render */
+const PART_COLS="serial,title,pdf_url,result,specs";
+/* A label and a filename rarely agree on spacing or case, so compare them stripped. */
+const tidy=s=>(s||"").replace(/[^A-Za-z0-9]+/g,"").toUpperCase();
+async function findPartRow(serial){
+  const want=tidy(serial);
+  let {data}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
+  if(data)return data;
+  /* Pull the catalogue and match on the tidied serial, then on a label that
+     carries an extra suffix (NC-121484DAN finding NC-121484). */
+  const all=await supa.from("northcomm_parts").select(PART_COLS);
+  const rows=(all&&all.data)||[];
+  const exact=rows.filter(r=>tidy(r.serial)===want);
+  if(exact.length===1)return exact[0];
+  if(want.length<6)return null;
+  const partial=rows.filter(r=>tidy(r.serial).length>=6&&
+    (want.startsWith(tidy(r.serial))||tidy(r.serial).startsWith(want)));
+  return partial.length===1?partial[0]:null;
+}
 async function lookupPart(serial){
   try{
-    const {data,error}=await supa.from("northcomm_parts").select("serial,title,pdf_url,result,specs").eq("serial",serial).maybeSingle();
-    if(error||!data)return null;
+    const data=await findPartRow(serial);
+    if(!data)return null;
     const specs=Array.isArray(data.specs)?data.specs:[];
     const pdfUrl=data.pdf_url?(/^https?:/i.test(data.pdf_url)?data.pdf_url:SUPA_URL+"/storage/v1/object/public/reports/"+data.pdf_url):null;
     return {part:data.serial,serial:data.serial,title:data.title||data.serial,
