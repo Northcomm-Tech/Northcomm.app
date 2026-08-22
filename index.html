@@ -34,7 +34,7 @@
   .recent{padding-bottom:max(30px,env(safe-area-inset-bottom))}
   .bar img{height:22px}
   .bar .spacer{flex:1}
-  .iconbtn{width:38px;height:38px;border:none;background:transparent;color:var(--ink);font-size:20px;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .iconbtn{width:44px;height:44px;border:none;background:transparent;color:var(--ink);font-size:20px;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center}
   .iconbtn:hover{background:var(--mist)}
 
   .view{flex:1;display:flex;flex-direction:column}
@@ -45,7 +45,7 @@
   .appmark{width:92px;height:92px;border-radius:22px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
   .appmark img{width:60px}
   .hero h1{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
-  .hero p{font-size:13.5px;color:var(--steel);margin-top:5px;line-height:1.5}
+  .hero p{font-size:13.5px;color:var(--steel);margin-top:9px;line-height:1.5}
   .cta{margin:22px 18px 8px;display:flex;flex-direction:column;gap:11px}
   .btn{display:flex;align-items:center;justify-content:center;gap:9px;border:none;border-radius:var(--radius);font-family:inherit;font-size:15px;font-weight:600;padding:16px;cursor:pointer;transition:transform .05s,background .15s}
   .btn:active{transform:scale(.985)}
@@ -57,7 +57,7 @@
 
   .recent{padding:26px 18px 30px}
   .recent .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .clear{font-size:12px;color:var(--steel);background:none;border:none;cursor:pointer}
+  .clear{font-size:12px;color:var(--steel);background:none;border:none;cursor:pointer;padding:8px 4px;margin:-8px -4px}
   .rlist{display:flex;flex-direction:column;gap:8px}
   .ritem{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit}
   .ritem:hover{border-color:var(--steel)}
@@ -94,8 +94,8 @@
   .sheet{background:var(--paper)}
   .sheet-head{background:var(--ink);color:#fff;padding:18px}
   .sheet-head .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .sheet-head h2{font-size:19px;font-weight:700;margin-top:3px}
-  .sheet-head .pn{color:var(--signal);font-size:13px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+  .sheet-head h2{font-size:19px;font-weight:700;margin-top:7px;line-height:1.35}
+  .sheet-head .pn{color:var(--signal);font-size:13px;font-weight:600;margin-top:7px;font-variant-numeric:tabular-nums}
   .accentbar{height:4px;background:var(--signal)}
   .doc{padding:20px 18px}
   .pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
@@ -112,7 +112,7 @@
   .filebadge{display:flex;align-items:center;gap:11px;padding:13px 14px;background:var(--mist);border-radius:12px;margin:0 18px 14px}
   .filebadge .fi{width:36px;height:44px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
   .filebadge .fn{font-size:13px;font-weight:600;color:var(--ink)}
-  .filebadge .fs{font-size:11.5px;color:var(--steel);margin-top:1px}
+  .filebadge .fs{font-size:11.5px;color:var(--steel);margin-top:6px;line-height:1.45}
 
   /* generic message / link result */
   .msg{padding:40px 24px;text-align:center}
@@ -126,16 +126,16 @@
   .qcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;gap:15px;align-items:center}
   .qcard .qimg{width:96px;height:96px;background:#fff;border-radius:8px;padding:6px;flex-shrink:0}
   .qcard .qimg canvas,.qcard .qimg img{width:100%;height:100%}
-  .qcard .qt{font-size:14px;font-weight:600;color:var(--ink)}
-  .qcard .qs{font-size:12px;color:var(--steel);margin-top:3px;line-height:1.5}
-  .qcard .simbtn{margin-top:10px;font-size:12px;font-weight:600;color:var(--signal);background:none;border:1px solid var(--signal);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit}
+  .qcard .qt{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
+  .qcard .qs{font-size:12px;color:var(--steel);margin-top:6px;line-height:1.5}
+  .qcard .simbtn{margin-top:12px;font-size:12px;font-weight:600;color:var(--signal);background:none;border:1px solid var(--signal);border-radius:8px;padding:11px 12px;cursor:pointer;font-family:inherit}
 
   /* manual entry */
   .manual{margin:2px 18px 0;display:flex;gap:8px}
   .manual input{flex:1;font-family:inherit;font-size:15px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);color:var(--text);text-transform:uppercase}
   .manual input:focus{outline:none;border-color:var(--signal)}
   .manual button{flex-shrink:0;padding:0 18px;border:none;border-radius:var(--radius);background:var(--ink);color:var(--paper);font-family:inherit;font-weight:600;cursor:pointer}
-  .linkbtn{background:none;border:none;color:var(--steel);font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:8px;align-self:center}
+  .linkbtn{background:none;border:none;color:var(--steel);font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:12px 10px;align-self:center;min-height:44px}
   /* torch */
   .scan-torch{width:44px;height:44px;border:none;background:rgba(0,0,0,.45);color:#fff;border-radius:50%;cursor:pointer;margin-left:auto;display:flex;align-items:center;justify-content:center}
   .scan-torch.on{background:var(--signal)}
@@ -155,7 +155,7 @@
   .login input:focus{outline:none;border-color:var(--signal)}
   .login .err{font-size:13px;color:#c0392b;text-align:center;min-height:16px}
   .login .swap{text-align:center;font-size:13.5px;color:var(--steel)}
-  .login .swap button{background:none;border:none;color:var(--signal);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline}
+  .login .swap button{background:none;border:none;color:var(--signal);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;padding:12px 8px;min-height:44px}
   .acctbtn{width:38px;height:38px;border:none;background:transparent;color:var(--ink);cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center}
   .acctbtn:hover{background:var(--mist)}
   .acctbtn svg{width:21px;height:21px}
