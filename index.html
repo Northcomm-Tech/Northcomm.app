@@ -439,19 +439,30 @@ function loadPreview(url){
 
 
 /* scanner */
-let stream=null,raf=null,track=null,torchOn=false,canvas=document.createElement("canvas"),ctx=canvas.getContext("2d",{willReadFrequently:true});
+let stream=null,raf=null,track=null,torchOn=false,scanning=false,frameNo=0,
+    canvas=document.createElement("canvas"),ctx=canvas.getContext("2d",{willReadFrequently:true});
+/* Phones with a built-in barcode engine decode far faster than script can. */
+let detector=null;
+if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]});}catch(e){detector=null;}}
 async function startScan(){
   show("home");$("scanner").classList.remove("hidden");
   $("torchBtn").classList.add("hidden");torchOn=false;$("torchBtn").classList.remove("on");
   try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+    stream=await navigator.mediaDevices.getUserMedia({video:{
+      facingMode:{ideal:"environment"},
+      width:{ideal:1920},height:{ideal:1080}
+    }});
     localStorage.setItem("cam_granted","1");
     const v=$("video");v.srcObject=stream;await v.play();
     $("scanHint").innerHTML='Point at a <b>QR label</b> &mdash; it reads automatically';
     track=stream.getVideoTracks()[0];
     const caps=track.getCapabilities?track.getCapabilities():{};
+    /* keep small labels sharp up close */
+    if(caps&&caps.focusMode&&caps.focusMode.includes("continuous")){
+      try{await track.applyConstraints({advanced:[{focusMode:"continuous"}]});}catch(e){}
+    }
     if(caps&&caps.torch)$("torchBtn").classList.remove("hidden");
-    tick();
+    scanning=true;frameNo=0;tick();
   }catch(e){
     $("scanHint").innerHTML='<b>Camera blocked.</b> Allow camera access in your browser, then retry &mdash; or use a sample code.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
   }
@@ -460,18 +471,49 @@ $("torchBtn").onclick=async()=>{
   if(!track)return;torchOn=!torchOn;
   try{await track.applyConstraints({advanced:[{torch:torchOn}]});$("torchBtn").classList.toggle("on",torchOn);}catch(e){}
 };
-function tick(){
+async function tick(){
   const v=$("video");
   if(v.readyState===v.HAVE_ENOUGH_DATA){
-    canvas.width=v.videoWidth;canvas.height=v.videoHeight;
-    ctx.drawImage(v,0,0,canvas.width,canvas.height);
-    const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:"dontInvert"});
-    if(code&&code.data){if(navigator.vibrate)navigator.vibrate(60);openResult(code.data.trim());return;}
+    let found=null;
+    if(detector){
+      try{const codes=await detector.detect(v);if(codes&&codes.length)found=codes[0].rawValue;}
+      catch(e){detector=null;}
+    }
+    if(!found)found=decodeFrame(v);
+    if(found&&found.trim()){
+      scanning=false;
+      if(navigator.vibrate)navigator.vibrate(60);
+      openResult(found.trim());
+      return;
+    }
   }
-  raf=requestAnimationFrame(tick);
+  if(scanning)raf=requestAnimationFrame(tick);
+}
+/* Alternate a tight centre crop (small labels held close) with the whole frame
+   (labels off to one side), and periodically retry inverted for dark labels. */
+function decodeFrame(v){
+  const vw=v.videoWidth,vh=v.videoHeight;
+  if(!vw||!vh)return null;
+  frameNo++;
+  let sx,sy,sw,sh,dw,dh;
+  if(frameNo%2===0){
+    const side=Math.floor(Math.min(vw,vh)*0.8);
+    sx=Math.floor((vw-side)/2);sy=Math.floor((vh-side)/2);sw=sh=side;
+    dw=dh=Math.min(side,640);
+  }else{
+    sx=sy=0;sw=vw;sh=vh;
+    const scale=Math.min(1,640/Math.max(vw,vh));
+    dw=Math.round(vw*scale);dh=Math.round(vh*scale);
+  }
+  canvas.width=dw;canvas.height=dh;
+  ctx.drawImage(v,sx,sy,sw,sh,0,0,dw,dh);
+  const img=ctx.getImageData(0,0,dw,dh);
+  const code=jsQR(img.data,img.width,img.height,
+    {inversionAttempts:frameNo%4===0?"attemptBoth":"dontInvert"});
+  return code&&code.data?code.data:null;
 }
 function stopScan(){
+  scanning=false;
   if(raf)cancelAnimationFrame(raf),raf=null;
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   track=null;torchOn=false;$("torchBtn").classList.remove("on");$("torchBtn").classList.add("hidden");
