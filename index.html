@@ -84,6 +84,8 @@
   .laser{position:absolute;left:6%;right:6%;height:3px;background:var(--signal);box-shadow:0 0 12px var(--signal);border-radius:3px;animation:sweep 2.4s ease-in-out infinite}
   @keyframes sweep{0%,100%{top:8%}50%{top:92%}}
   @media (prefers-reduced-motion:reduce){.laser{animation:none;top:50%}}
+  .zoomrow{display:flex;align-items:center;gap:12px;padding:0 28px;margin-bottom:6px;color:#fff;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .zoomrow input{flex:1;accent-color:var(--signal)}
   .scan-hint{text-align:center;padding:20px 24px calc(30px + env(safe-area-inset-bottom));font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.5}
   .scan-hint b{color:var(--signal)}
   .scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);z-index:1}
@@ -244,6 +246,10 @@
           <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
         </div>
       </div>
+      <div class="zoomrow hidden" id="zoomRow">
+        <span>Zoom</span>
+        <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="2" aria-label="Camera zoom">
+      </div>
       <div class="scan-hint" id="scanHint">Point at a <b>QR label</b> &mdash; it reads automatically</div>
     </div>
   </div>
@@ -370,6 +376,14 @@ async function lookupPart(serial){
 async function openResult(code){
   stopScan();
   code=(code||"").trim();
+  /* A label may encode a link carrying the serial — use the serial, not the link. */
+  if(/^https?:\/\//i.test(code)){
+    try{
+      const u=new URL(code);
+      const s=u.searchParams.get("s")||u.searchParams.get("serial");
+      if(s)code=s.trim();
+    }catch(e){}
+  }
   const key=code.replace(/\s+/g,"").toUpperCase();
   let rec=CATALOG[key]||CATALOG[code];
   const box=$("result");box.classList.add("fade");
@@ -448,9 +462,10 @@ async function startScan(){
   show("home");$("scanner").classList.remove("hidden");
   $("torchBtn").classList.add("hidden");torchOn=false;$("torchBtn").classList.remove("on");
   try{
+    /* Ask for the sharpest feed the phone will give — small labels need pixels. */
     stream=await navigator.mediaDevices.getUserMedia({video:{
       facingMode:{ideal:"environment"},
-      width:{ideal:1920},height:{ideal:1080}
+      width:{ideal:2560},height:{ideal:1440}
     }});
     localStorage.setItem("cam_granted","1");
     const v=$("video");v.srcObject=stream;await v.play();
@@ -461,11 +476,26 @@ async function startScan(){
     if(caps&&caps.focusMode&&caps.focusMode.includes("continuous")){
       try{await track.applyConstraints({advanced:[{focusMode:"continuous"}]});}catch(e){}
     }
+    /* A little optical zoom makes a small label fill far more of the sensor. */
+    if(caps&&caps.zoom){
+      const z=Math.min(caps.zoom.max||1,Math.max(caps.zoom.min||1,2));
+      try{await track.applyConstraints({advanced:[{zoom:z}]});}catch(e){}
+      setupZoom(caps.zoom,z);
+    }
     if(caps&&caps.torch)$("torchBtn").classList.remove("hidden");
     scanning=true;frameNo=0;tick();
   }catch(e){
     $("scanHint").innerHTML='<b>Camera blocked.</b> Allow camera access in your browser, then retry &mdash; or use a sample code.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
   }
+}
+function setupZoom(range,current){
+  const row=$("zoomRow"),s=$("zoomSlider");
+  s.min=range.min||1;s.max=range.max||5;s.step=range.step||0.1;s.value=current;
+  row.classList.remove("hidden");
+  s.oninput=async()=>{
+    if(!track)return;
+    try{await track.applyConstraints({advanced:[{zoom:parseFloat(s.value)}]});}catch(e){}
+  };
 }
 $("torchBtn").onclick=async()=>{
   if(!track)return;torchOn=!torchOn;
@@ -496,14 +526,17 @@ function decodeFrame(v){
   if(!vw||!vh)return null;
   frameNo++;
   let sx,sy,sw,sh,dw,dh;
-  if(frameNo%2===0){
-    const side=Math.floor(Math.min(vw,vh)*0.8);
-    sx=Math.floor((vw-side)/2);sy=Math.floor((vh-side)/2);sw=sh=side;
-    dw=dh=Math.min(side,640);
-  }else{
+  /* Cycle wide / medium / tight so both a distant label and a small one read. */
+  const step=frameNo%3;
+  if(step===0){
     sx=sy=0;sw=vw;sh=vh;
-    const scale=Math.min(1,640/Math.max(vw,vh));
+    const scale=Math.min(1,720/Math.max(vw,vh));
     dw=Math.round(vw*scale);dh=Math.round(vh*scale);
+  }else{
+    const frac=step===1?0.75:0.4;
+    const side=Math.floor(Math.min(vw,vh)*frac);
+    sx=Math.floor((vw-side)/2);sy=Math.floor((vh-side)/2);sw=sh=side;
+    dw=dh=Math.min(side,720);
   }
   canvas.width=dw;canvas.height=dh;
   ctx.drawImage(v,sx,sy,sw,sh,0,0,dw,dh);
@@ -546,11 +579,22 @@ async function buildSamples(){
     const card=document.createElement("div");card.className="qcard";
     const qimg=document.createElement("div");qimg.className="qimg";
     const c=document.createElement("div");qimg.appendChild(c);
-    new QRCode(c,{text:pn,width:180,height:180,colorDark:"#353535",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+    const linkLabel=location.origin+location.pathname+"?s="+encodeURIComponent(pn);
+    let asLink=true;
+    const draw=()=>{c.innerHTML="";new QRCode(c,{text:asLink?linkLabel:pn,width:180,height:180,colorDark:"#353535",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});};
+    draw();
     const info=document.createElement("div");
     info.innerHTML=`<div class="qt">${row.title||pn}</div><div class="qs">Serial #${pn}</div>`;
+    const kind=document.createElement("div");
+    kind.style.cssText="font-size:11.5px;color:var(--steel);margin-top:6px";
+    const setKind=()=>{kind.textContent=asLink?"Opens with any phone camera":"Plain serial (in-app scan only)";};
+    setKind();
+    const swap=document.createElement("button");swap.className="simbtn";swap.textContent="Switch label type";
+    swap.onclick=()=>{asLink=!asLink;draw();setKind();};
     const sim=document.createElement("button");sim.className="simbtn";sim.textContent="Open report";
-    sim.onclick=()=>openResult(pn);info.appendChild(document.createElement("br"));info.appendChild(sim);
+    sim.onclick=()=>openResult(pn);
+    info.appendChild(kind);info.appendChild(document.createElement("br"));
+    info.appendChild(sim);info.appendChild(swap);
     card.appendChild(qimg);card.appendChild(info);wrap.appendChild(card);
   });
 }
@@ -585,4 +629,12 @@ document.addEventListener("gesturestart",e=>e.preventDefault());
 $("scanner").addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 
 initAuth();
+
+/* Labels can encode a link ending in ?s=SERIAL, so the phone's own camera app
+   opens the report straight away without going through the in-app scanner. */
+(function(){
+  const q=new URLSearchParams(location.search);
+  const s=(q.get("s")||q.get("serial")||"").trim();
+  if(s)openResult(s);
+})();
 </script>
