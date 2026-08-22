@@ -136,6 +136,9 @@
   .manual input:focus{outline:none;border-color:var(--signal)}
   .manual button{flex-shrink:0;padding:0 18px;border:none;border-radius:var(--radius);background:var(--ink);color:var(--paper);font-family:inherit;font-weight:600;cursor:pointer}
   .linkbtn{background:none;border:none;color:var(--steel);font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:12px 10px;align-self:center;min-height:44px}
+  .acctfoot{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px}
+  .footlinks{font-size:12px;color:var(--steel);padding-bottom:4px}
+  .footlinks a{color:var(--steel)}
   /* torch */
   .scan-torch{width:44px;height:44px;border:none;background:rgba(0,0,0,.45);color:#fff;border-radius:50%;cursor:pointer;margin-left:auto;display:flex;align-items:center;justify-content:center}
   .scan-torch.on{background:var(--signal)}
@@ -216,6 +219,10 @@
         <button class="clear hidden" id="clearBtn">Clear</button>
       </div>
       <div class="rlist" id="rlist"></div>
+      <div class="acctfoot hidden" id="acctFoot">
+        <button class="linkbtn" id="deleteAcctBtn">Delete my account</button>
+        <div class="footlinks"><a href="privacy.html">Privacy</a> &middot; <a href="support.html">Support</a></div>
+      </div>
     </div>
   </div>
 
@@ -318,8 +325,8 @@ $("clearBtn").onclick=async()=>{
 
 /* auth flow */
 function reflectAuth(){
-  if(session){$("signOutBtn").classList.remove("hidden");show("home");loadScans();}
-  else{$("signOutBtn").classList.add("hidden");show("login");}
+  if(session){$("signOutBtn").classList.remove("hidden");$("acctFoot").classList.remove("hidden");show("home");loadScans();}
+  else{$("signOutBtn").classList.add("hidden");$("acctFoot").classList.add("hidden");show("login");}
 }
 function setAuthMode(m){
   authMode=m;
@@ -350,6 +357,20 @@ $("authBtn").onclick=doAuth;
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")doAuth();});
 $("swapMode").onclick=()=>setAuthMode(authMode==="signin"?"signup":"signin");
 $("signOutBtn").onclick=async()=>{await supa.auth.signOut();};
+/* App stores require an in-app way to delete the account and its data. */
+$("deleteAcctBtn").onclick=async()=>{
+  if(!session)return;
+  if(!confirm("Delete your account and scan history? This cannot be undone. Reports stay on file."))return;
+  try{
+    const {error}=await supa.rpc("delete_own_account");
+    if(error)throw error;
+    try{localStorage.removeItem(cacheKey());}catch(e){}
+    await supa.auth.signOut();
+    alert("Your account has been deleted.");
+  }catch(e){
+    alert("Could not delete the account just now. Please try again, or email support@northcomm.app");
+  }
+};
 async function initAuth(){
   try{
     const {data}=await supa.auth.getSession();
