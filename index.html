@@ -429,6 +429,10 @@ async function openResult(code){
           <div class="pn">${real?"Serial #"+rec.serial:"Part #"+rec.part}</div>
         </div>
         <div class="accentbar"></div>
+        ${real?`<div class="docbtns" style="padding-top:16px">
+          <a class="btn btn-primary" href="${rec.pdfUrl}" target="_blank" rel="noopener" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</a>
+          <div id="pdfSlot"></div>
+        </div>`:""}
         <div class="filebadge">
           <div class="fi">PDF</div>
           <div><div class="fn">${real?rec.file:rec.part+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies &middot; tap download below"}</div></div>
@@ -436,18 +440,17 @@ async function openResult(code){
         <div class="doc">
           <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${t}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
           <h3>${real?"Summary":"Description"}</h3><p class="desc">${rec.desc}</p>
-          <h3>${real?"Key measurements":"Specifications"}</h3>
-          <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>
-          ${real?`<div id="pdfSlot" style="margin-top:14px"><button class="btn btn-ghost" onclick="loadPreview('${rec.pdfUrl}')" style="width:100%">${canEmbedPDF?"Show report preview":"Open the PDF"}</button></div>`:""}
+          ${rec.specs.length?`<h3>${real?"Key measurements":"Specifications"}</h3>
+          <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>`:""}
         </div>
         <div class="docbtns">
           ${real
-            ? `<a class="btn btn-primary" href="${rec.pdfUrl}" target="_blank" rel="noopener" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</a>
-               <a class="btn btn-ghost" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none">Download PDF</a>`
+            ? `<a class="btn btn-ghost" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none">Download PDF</a>`
             : `<div class="empty">No PDF on file for this serial yet.</div>`}
           <button class="btn btn-ghost" onclick="startScan()">Scan another</button>
         </div>
       </div>`;
+    if(real){show("result");renderReport(rec.pdfUrl);return;}
   }else{
     const isUrl=/^https?:\/\//i.test(code);
     box.innerHTML=`
@@ -464,17 +467,15 @@ async function openResult(code){
   show("result");
 }
 function goHome(){stopScan();show("home");}
-/* Phones cannot render a PDF inside the page, so only desktop gets an inline preview. */
-const canEmbedPDF=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-function loadPreview(url){
+/* These sweep reports are image-heavy, and the phone's own PDF viewer opens them
+   far faster than anything drawn in the page — so hand the file straight to it. */
+function renderReport(url){
   const slot=document.getElementById("pdfSlot");
   if(!slot)return;
-  if(!canEmbedPDF){window.open(url,"_blank","noopener");return;}
-  slot.innerHTML='<div class="empty">Loading preview&hellip;</div>';
-  const f=document.createElement("iframe");
-  f.src=url;
-  f.style.cssText="width:100%;height:430px;border:1px solid var(--line);border-radius:12px";
-  slot.innerHTML="";slot.appendChild(f);
+  let opened=null;
+  try{opened=window.open(url,"_blank","noopener");}catch(e){}
+  /* If the browser blocked it, the button directly above is already the way in. */
+  slot.innerHTML=opened?'<div class="empty">Report opened in a new tab.</div>':"";
 }
 
 
