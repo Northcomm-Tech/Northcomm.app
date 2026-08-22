@@ -368,16 +368,24 @@ async function findPartRow(serial){
   const want=tidy(serial);
   let {data}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
   if(data)return data;
-  /* Pull the catalogue and match on the tidied serial, then on a label that
-     carries an extra suffix (NC-121484DAN finding NC-121484). */
+  /* Pull the catalogue and match on the tidied serial. Real labels wrap the
+     serial in other text — "S/N: NC-121484DAN" — so also accept a unique row
+     whose serial sits inside the scanned text, or vice versa. */
   const all=await supa.from("northcomm_parts").select(PART_COLS);
   const rows=(all&&all.data)||[];
   const exact=rows.filter(r=>tidy(r.serial)===want);
   if(exact.length===1)return exact[0];
   if(want.length<6)return null;
-  const partial=rows.filter(r=>tidy(r.serial).length>=6&&
-    (want.startsWith(tidy(r.serial))||tidy(r.serial).startsWith(want)));
-  return partial.length===1?partial[0]:null;
+  const inside=rows.filter(r=>tidy(r.serial).length>=6&&want.includes(tidy(r.serial)));
+  if(inside.length===1)return inside[0];
+  if(inside.length>1){
+    /* prefer the longest serial, so NC-1214841 wins over NC-121484 */
+    inside.sort((a,b)=>tidy(b.serial).length-tidy(a.serial).length);
+    if(tidy(inside[0].serial).length>tidy(inside[1].serial).length)return inside[0];
+    return null;
+  }
+  const around=rows.filter(r=>tidy(r.serial).length>=6&&tidy(r.serial).includes(want));
+  return around.length===1?around[0]:null;
 }
 async function lookupPart(serial){
   try{
