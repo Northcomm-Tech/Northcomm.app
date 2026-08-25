@@ -204,7 +204,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M4 12h16"/></svg>
         Scan a code
       </button>
-      <button class="btn btn-ghost" id="sampleBtn">Browse reports on file</button>
+      <button class="btn btn-ghost hidden" id="sampleBtn">Browse reports on file</button>
       <button class="linkbtn" id="manualToggle">Enter a part number manually</button>
     </div>
     <div class="manual hidden" id="manualRow">
@@ -328,8 +328,8 @@ $("clearBtn").onclick=async()=>{
 
 /* auth flow */
 function reflectAuth(){
-  if(session){$("signOutBtn").classList.remove("hidden");$("acctFoot").classList.remove("hidden");show("home");loadScans();}
-  else{$("signOutBtn").classList.add("hidden");$("acctFoot").classList.add("hidden");show("login");}
+  if(session){$("signOutBtn").classList.remove("hidden");$("acctFoot").classList.remove("hidden");$("sampleBtn").classList.remove("hidden");show("home");loadScans();}
+  else{$("signOutBtn").classList.add("hidden");$("acctFoot").classList.add("hidden");$("sampleBtn").classList.add("hidden");show("login");}
 }
 function setAuthMode(m){
   authMode=m;
@@ -389,27 +389,25 @@ const PART_COLS="serial,title,pdf_url,result,specs";
 /* A label and a filename rarely agree on spacing or case, so compare them stripped. */
 const tidy=s=>(s||"").replace(/[^A-Za-z0-9]+/g,"").toUpperCase();
 async function findPartRow(serial){
+  /* The database does the matching now, so the catalogue cannot be listed by
+     anyone holding the app's public key — a known serial is the only way in. */
+  const {data,error}=await supa.rpc("lookup_report",{scanned:serial});
+  if(!error)return (data&&data.length)?data[0]:null;
+  return matchLocally(serial);
+}
+/* Used only until lock-down-access.sql has been run on the database. */
+async function matchLocally(serial){
   const want=tidy(serial);
-  let {data}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
-  if(data)return data;
-  /* Pull the catalogue and match on the tidied serial. Real labels wrap the
-     serial in other text — "S/N: NC-121484DAN" — so also accept a unique row
-     whose serial sits inside the scanned text, or vice versa. */
+  const {data:exactRow}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
+  if(exactRow)return exactRow;
+  if(want.length<6)return null;
   const all=await supa.from("northcomm_parts").select(PART_COLS);
   const rows=(all&&all.data)||[];
   const exact=rows.filter(r=>tidy(r.serial)===want);
   if(exact.length===1)return exact[0];
-  if(want.length<6)return null;
-  const inside=rows.filter(r=>tidy(r.serial).length>=6&&want.includes(tidy(r.serial)));
-  if(inside.length===1)return inside[0];
-  if(inside.length>1){
-    /* prefer the longest serial, so NC-1214841 wins over NC-121484 */
-    inside.sort((a,b)=>tidy(b.serial).length-tidy(a.serial).length);
-    if(tidy(inside[0].serial).length>tidy(inside[1].serial).length)return inside[0];
-    return null;
-  }
-  const around=rows.filter(r=>tidy(r.serial).length>=6&&tidy(r.serial).includes(want));
-  return around.length===1?around[0]:null;
+  const inside=rows.filter(r=>tidy(r.serial).length>=6&&want.includes(tidy(r.serial)))
+    .sort((a,b)=>tidy(b.serial).length-tidy(a.serial).length);
+  return inside.length?inside[0]:null;
 }
 async function lookupPart(serial){
   try{
@@ -454,12 +452,11 @@ async function openResult(code){
         </div>
         <div class="accentbar"></div>
         ${real?`<div class="docbtns" style="padding-top:16px">
-          <button class="btn btn-primary" onclick="renderReport('${rec.pdfUrl}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</button>
-          <div id="pdfSlot"></div>
+          <a class="btn btn-primary" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Save PDF</a>
         </div>`:""}
         <div class="filebadge">
           <div class="fi">PDF</div>
-          <div><div class="fn">${real?rec.file:rec.part+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies &middot; tap download below"}</div></div>
+          <div><div class="fn">${real?rec.file:rec.part+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies"}</div></div>
         </div>
         <div class="doc">
           <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${t}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
@@ -472,7 +469,6 @@ async function openResult(code){
           <button class="btn btn-ghost" onclick="startScan()">Scan another</button>
         </div>
       </div>`;
-    if(real){show("result");renderReport(rec.pdfUrl);return;}
   }else{
     const isUrl=/^https?:\/\//i.test(code);
     box.innerHTML=`
@@ -489,21 +485,6 @@ async function openResult(code){
   show("result");
 }
 function goHome(){stopScan();show("home");}
-/* These sweep reports are image-heavy, and the phone's own PDF viewer opens them
-   far faster than anything drawn in the page — so hand the file straight to it. */
-/* Show the report itself straight away. A new tab keeps the app open behind it;
-   if the browser blocks that, go to the PDF in this tab so it still just appears. */
-function renderReport(url){
-  const slot=document.getElementById("pdfSlot");
-  let opened=null;
-  try{opened=window.open(url,"_blank","noopener");}catch(e){}
-  if(opened){
-    if(slot)slot.innerHTML='<div class="empty">Report opened in a new tab.</div>';
-    return;
-  }
-  if(slot)slot.innerHTML='<div class="empty">Opening report&hellip;</div>';
-  location.href=url;
-}
 
 
 /* scanner */
