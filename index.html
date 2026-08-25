@@ -454,7 +454,7 @@ async function openResult(code){
         </div>
         <div class="accentbar"></div>
         ${real?`<div class="docbtns" style="padding-top:16px">
-          <a class="btn btn-primary" href="${rec.pdfUrl}" target="_blank" rel="noopener" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</a>
+          <button class="btn btn-primary" onclick="renderReport('${rec.pdfUrl}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>View full report</button>
           <div id="pdfSlot"></div>
         </div>`:""}
         <div class="filebadge">
@@ -468,9 +468,7 @@ async function openResult(code){
           <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>`:""}
         </div>
         <div class="docbtns">
-          ${real
-            ? `<a class="btn btn-ghost" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none">Download PDF</a>`
-            : `<div class="empty">No PDF on file for this serial yet.</div>`}
+          ${real?"":`<div class="empty">No PDF on file for this serial yet.</div>`}
           <button class="btn btn-ghost" onclick="startScan()">Scan another</button>
         </div>
       </div>`;
@@ -493,13 +491,18 @@ async function openResult(code){
 function goHome(){stopScan();show("home");}
 /* These sweep reports are image-heavy, and the phone's own PDF viewer opens them
    far faster than anything drawn in the page — so hand the file straight to it. */
+/* Show the report itself straight away. A new tab keeps the app open behind it;
+   if the browser blocks that, go to the PDF in this tab so it still just appears. */
 function renderReport(url){
   const slot=document.getElementById("pdfSlot");
-  if(!slot)return;
   let opened=null;
   try{opened=window.open(url,"_blank","noopener");}catch(e){}
-  /* If the browser blocked it, the button directly above is already the way in. */
-  slot.innerHTML=opened?'<div class="empty">Report opened in a new tab.</div>':"";
+  if(opened){
+    if(slot)slot.innerHTML='<div class="empty">Report opened in a new tab.</div>';
+    return;
+  }
+  if(slot)slot.innerHTML='<div class="empty">Opening report&hellip;</div>';
+  location.href=url;
 }
 
 
