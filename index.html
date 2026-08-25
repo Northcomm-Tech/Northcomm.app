@@ -136,6 +136,8 @@
   .manual input:focus{outline:none;border-color:var(--signal)}
   .manual button{flex-shrink:0;padding:0 18px;border:none;border-radius:var(--radius);background:var(--ink);color:var(--paper);font-family:inherit;font-weight:600;cursor:pointer}
   .linkbtn{background:none;border:none;color:var(--steel);font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:12px 10px;align-self:center;min-height:44px}
+  .searchbox{width:100%;font-family:inherit;font-size:15px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);color:var(--text);margin-bottom:18px;min-height:48px}
+  .searchbox:focus{outline:none;border-color:var(--signal)}
   .acctfoot{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px}
   .footlinks{font-size:12px;color:var(--steel);padding-bottom:4px}
   .footlinks a{color:var(--steel)}
@@ -234,6 +236,7 @@
     <div class="pad"><button class="btn btn-ghost" id="backFromSamples" style="padding:11px">&larr; Back</button></div>
     <div class="samples">
       <p>Every report currently on file. Print a QR for the label, scan one with a second phone, or tap <b>Open report</b> to pull it up.</p>
+      <input id="reportSearch" class="searchbox" type="search" placeholder="Search by serial" autocapitalize="characters" autocomplete="off">
       <div id="qcards"></div>
     </div>
   </div>
@@ -622,9 +625,25 @@ async function buildSamples(){
     wrap.innerHTML='<div class="empty">No reports on file yet.<br>Upload a PDF named after its serial (for example NC-121483.pdf) to the <b>reports</b> folder in Supabase, and it will appear here.</div>';
     return;
   }
+  /* The catalogue grows over time, so let people narrow it down. */
+  $("reportSearch").oninput=()=>{
+    const q=tidy($("reportSearch").value);
+    let shown=0;
+    wrap.querySelectorAll("[data-serial]").forEach(card=>{
+      const hit=!q||tidy(card.dataset.serial).includes(q)||tidy(card.dataset.title).includes(q);
+      card.classList.toggle("hidden",!hit);
+      if(hit)shown++;
+    });
+    let none=wrap.querySelector(".nomatch");
+    if(!shown&&!none){
+      none=document.createElement("div");none.className="empty nomatch";
+      none.textContent="No report matches that serial.";wrap.appendChild(none);
+    }else if(none&&shown){none.remove();}
+  };
   rows.forEach(row=>{
     const pn=row.serial;
     const card=document.createElement("div");card.className="qcard";
+    card.dataset.serial=pn;card.dataset.title=row.title||"";
     const qimg=document.createElement("div");qimg.className="qimg";
     const c=document.createElement("div");qimg.appendChild(c);
     const linkLabel=location.origin+location.pathname+"?s="+encodeURIComponent(pn);
