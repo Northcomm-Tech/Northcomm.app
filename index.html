@@ -310,6 +310,8 @@ async function saveScan(code,title){
   scans=[{code,title},...cacheGet().filter(s=>s.code!==code)].slice(0,8);cacheSet(scans);
   loadScans();
 }
+/* A DB row or a scanned code can carry markup; neutralise it before it lands in HTML. */
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function renderRecent(){
   const list=$("rlist");list.innerHTML="";
   $("clearBtn").classList.toggle("hidden",scans.length===0);
@@ -317,7 +319,7 @@ function renderRecent(){
   scans.forEach(row=>{
     const code=row.code,title=row.title||(CATALOG[code]&&CATALOG[code].title)||code;
     const b=document.createElement("button");b.className="ritem";
-    b.innerHTML=`<span class="rtag"></span><span><span class="t">${title}</span><span class="s">Part #${code}</span></span><span class="chev">&rsaquo;</span>`;
+    b.innerHTML=`<span class="rtag"></span><span><span class="t">${esc(title)}</span><span class="s">Part #${esc(code)}</span></span><span class="chev">&rsaquo;</span>`;
     b.onclick=()=>openResult(code);list.appendChild(b);
   });
 }
@@ -447,22 +449,22 @@ async function openResult(code){
       <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
       <div class="sheet">
         <div class="sheet-head">
-          <div class="k">${real?"Test report":"Spec sheet"}</div><h2>${rec.title}</h2>
-          <div class="pn">${real?"Serial #"+rec.serial:"Part #"+rec.part}</div>
+          <div class="k">${real?"Test report":"Spec sheet"}</div><h2>${esc(rec.title)}</h2>
+          <div class="pn">${real?"Serial #"+esc(rec.serial):"Part #"+esc(rec.part)}</div>
         </div>
         <div class="accentbar"></div>
         ${real?`<div class="docbtns" style="padding-top:16px">
-          <a class="btn btn-primary" href="${rec.pdfUrl}" download="${rec.file}" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Save PDF</a>
+          <a class="btn btn-primary" href="${esc(rec.pdfUrl)}" download="${esc(rec.file)}" style="text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Save PDF</a>
         </div>`:""}
         <div class="filebadge">
           <div class="fi">PDF</div>
-          <div><div class="fn">${real?rec.file:rec.part+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies"}</div></div>
+          <div><div class="fn">${real?esc(rec.file):esc(rec.part)+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies"}</div></div>
         </div>
         <div class="doc">
-          <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${t}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
-          <h3>${real?"Summary":"Description"}</h3><p class="desc">${rec.desc}</p>
+          <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
+          <h3>${real?"Summary":"Description"}</h3><p class="desc">${esc(rec.desc)}</p>
           ${rec.specs.length?`<h3>${real?"Key measurements":"Specifications"}</h3>
-          <table class="spectable">${rec.specs.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}</table>`:""}
+          <table class="spectable">${rec.specs.map(s=>`<tr><td>${esc(s[0])}</td><td>${esc(s[1])}</td></tr>`).join("")}</table>`:""}
         </div>
         <div class="docbtns">
           ${real?"":`<div class="empty">No PDF on file for this serial yet.</div>`}
@@ -471,21 +473,23 @@ async function openResult(code){
       </div>`;
   }else{
     const isUrl=/^https?:\/\//i.test(code);
-    /* A scanned QR is untrusted input, so a URL must be neutralised before it
-       goes inside an inline handler, or a crafted label could break out and run
-       its own script. encodeURI keeps a real link working; the quote swap closes
-       the JS-string escape. */
-    const safeUrl=encodeURI(code).replace(/'/g,"%27");
+    /* A scanned QR is fully untrusted, so never build a link from it by string
+       interpolation: an HTML-entity quote like &#39; is decoded inside an
+       attribute before the JS runs and can break out. Validate it as http(s)
+       here, then bind the click in JS so the value never touches HTML at all. */
+    let openUrl=null;
+    if(isUrl){try{const u=new URL(code);if(u.protocol==="http:"||u.protocol==="https:")openUrl=u.href;}catch(e){}}
     box.innerHTML=`
       <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
       <div class="msg">
-        <div class="big">${isUrl?"This label links out":"No report on file yet"}</div>
-        <div class="sub">${isUrl?"The scanned QR points to a web address:":"Scanned value:"}</div>
-        <div class="linkbox">${code.replace(/</g,"&lt;")}</div>
-        ${isUrl?`<button class="btn btn-dark" onclick="window.open('${safeUrl}','_blank')">Open link</button>`:`<div class="sub">No report on file for this serial yet. Upload <b>${code.replace(/</g,"&lt;")}.pdf</b> to the reports folder in Supabase and it will show up here.</div>`}
+        <div class="big">${openUrl?"This label links out":"No report on file yet"}</div>
+        <div class="sub">${openUrl?"The scanned QR points to a web address:":"Scanned value:"}</div>
+        <div class="linkbox">${esc(code)}</div>
+        ${openUrl?`<button class="btn btn-dark" id="openLinkBtn">Open link</button>`:`<div class="sub">No report on file for this serial yet. Upload <b>${esc(code)}.pdf</b> to the reports folder in Supabase and it will show up here.</div>`}
         <div style="height:12px"></div>
         <button class="btn btn-ghost" onclick="startScan()">Scan again</button>
       </div>`;
+    if(openUrl){const b=$("openLinkBtn");if(b)b.addEventListener("click",()=>window.open(openUrl,"_blank","noopener"));}
   }
   show("result");
 }
@@ -640,7 +644,7 @@ async function buildSamples(){
     const draw=()=>{c.innerHTML="";new QRCode(c,{text:asLink?linkLabel:pn,width:180,height:180,colorDark:"#353535",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});};
     draw();
     const info=document.createElement("div");
-    info.innerHTML=`<div class="qt">${row.title||pn}</div><div class="qs">Serial #${pn}</div>`;
+    info.innerHTML=`<div class="qt">${esc(row.title||pn)}</div><div class="qs">Serial #${esc(pn)}</div>`;
     const kind=document.createElement("div");
     kind.style.cssText="font-size:11.5px;color:var(--steel);margin-top:6px";
     const setKind=()=>{kind.textContent=asLink?"Opens with any phone camera":"Plain serial (in-app scan only)";};

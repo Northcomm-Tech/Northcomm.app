@@ -1,0 +1,12 @@
+Hey Mark,
+
+Good news, your ScanSpec app is live and ready to use here:
+https://northcomm-tech.github.io/Northcomm.app/
+
+There's one quick thing I need you to do that only you can do, since it needs your Supabase login. It's a one-time step that makes the app secure and turns on account deletion. Just log in to your Northcomm Supabase project, open the SQL Editor, paste in the setup file, and click Run. That's the whole thing, and it's totally safe to run more than once. I put a short step-by-step in MARK-TODO.md with the exact link to copy the file from, so you can follow along.
+
+After that, adding a new report is easy and you never need me for it. In Supabase, go to Storage, open the reports bucket, and upload the PDF named after the serial, like NC-121483.pdf. Scanning that serial pulls it right up.
+
+Any questions, just text me.
+
+Jack
