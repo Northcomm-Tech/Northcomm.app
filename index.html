@@ -471,13 +471,18 @@ async function openResult(code){
       </div>`;
   }else{
     const isUrl=/^https?:\/\//i.test(code);
+    /* A scanned QR is untrusted input, so a URL must be neutralised before it
+       goes inside an inline handler, or a crafted label could break out and run
+       its own script. encodeURI keeps a real link working; the quote swap closes
+       the JS-string escape. */
+    const safeUrl=encodeURI(code).replace(/'/g,"%27");
     box.innerHTML=`
       <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
       <div class="msg">
         <div class="big">${isUrl?"This label links out":"No report on file yet"}</div>
         <div class="sub">${isUrl?"The scanned QR points to a web address:":"Scanned value:"}</div>
         <div class="linkbox">${code.replace(/</g,"&lt;")}</div>
-        ${isUrl?`<button class="btn btn-dark" onclick="window.open('${code}','_blank')">Open link</button>`:`<div class="sub">No report on file for this serial yet. Upload <b>${code.replace(/</g,"&lt;")}.pdf</b> to the reports folder in Supabase and it will show up here.</div>`}
+        ${isUrl?`<button class="btn btn-dark" onclick="window.open('${safeUrl}','_blank')">Open link</button>`:`<div class="sub">No report on file for this serial yet. Upload <b>${code.replace(/</g,"&lt;")}.pdf</b> to the reports folder in Supabase and it will show up here.</div>`}
         <div style="height:12px"></div>
         <button class="btn btn-ghost" onclick="startScan()">Scan again</button>
       </div>`;
