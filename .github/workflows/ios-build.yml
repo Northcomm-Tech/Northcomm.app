@@ -54,9 +54,7 @@ jobs:
             "Set :NSCameraUsageDescription 'Northcomm ScanSpec uses the camera to scan QR labels on assemblies.'" \
             "$PLIST"
 
-      - name: Install CocoaPods
-        working-directory: ios/App
-        run: pod install
+      # (CocoaPods runs automatically inside `npx cap sync ios` above.)
 
       # ---- Detect whether signing secrets are present ----
       - name: Check for signing secrets
