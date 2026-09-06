@@ -33,13 +33,13 @@ KEY FEATURES
 
 - Scan a QR label and open the matching factory test report and spec sheet
 - Fast camera-based lookup designed for field and install staff
-- Optional sign-in to save your scan history across your devices
+- Sign in once to save your scan history across your devices
 - Clean, no-clutter interface
 - Free to use, with no ads and no third-party tracking
 
-OPTIONAL ACCOUNT
+YOUR ACCOUNT
 
-You can use ScanSpec without an account. If you want your scan history saved and synced across devices, you can create a free account with your email address. You can delete your account and its data from inside the app at any time.
+ScanSpec asks you to sign in with your email address the first time you open it. That account keeps your scan history saved and synced across your devices. It is free, and you can delete your account and its data from inside the app at any time.
 
 PRIVACY
 

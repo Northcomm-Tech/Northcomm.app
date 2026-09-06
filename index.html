@@ -397,7 +397,7 @@ async function findPartRow(serial){
   if(!error)return (data&&data.length)?data[0]:null;
   return matchLocally(serial);
 }
-/* Used only until lock-down-access.sql has been run on the database. */
+/* Used only until northcomm-setup.sql has been run on the database. */
 async function matchLocally(serial){
   const want=tidy(serial);
   const {data:exactRow}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
