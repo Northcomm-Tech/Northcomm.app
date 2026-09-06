@@ -1,11 +1,38 @@
 Hey Mark,
 
-Good news, your ScanSpec app is live and ready to use here:
-https://northcomm-tech.github.io/Northcomm.app/
+Two things: one quick, one that takes a few weeks and we should start now so it isn't the thing holding us up later.
 
-There's one quick thing I need you to do that only you can do, since it needs your Supabase login. It's a one-time step that makes the app secure and turns on account deletion. Just log in to your Northcomm Supabase project, open the SQL Editor, paste in the setup file, and click Run. That's the whole thing, and it's totally safe to run more than once. I put a short step-by-step in MARK-TODO.md with the exact link to copy the file from, so you can follow along.
+1) THE 5-MINUTE ONE (please do this first)
 
-After that, adding a new report is easy and you never need me for it. In Supabase, go to Storage, open the reports bucket, and upload the PDF named after the serial, like NC-121483.pdf. Scanning that serial pulls it right up.
+Your ScanSpec app is live at https://northcomm-tech.github.io/Northcomm.app/ but there's a setup step only you can do, because it needs your Supabase login.
+
+Right now the app is running in a temporary mode where the full parts list can be read by anyone who pokes at it, and the "delete my account" button doesn't work yet. The setup file fixes both. Apple won't approve the app until that delete button works, so this one is blocking the App Store too.
+
+Log in to your Northcomm Supabase project, open SQL Editor in the left menu, paste in the setup file and hit Run. It's safe to run more than once. The exact steps and the link to copy the file from are in MARK-TODO.md.
+
+2) THE APPLE ONE (start now, it's the long pole)
+
+To put ScanSpec on the App Store, Northcomm needs its own Apple Developer account. It has to be in the business name, not your personal Apple ID, and it costs $99/year.
+
+The slow part is that Apple verifies the business, and to do that they need a D-U-N-S number for North Comm Technologies. That's free from Dun & Bradstreet but takes a week or two on its own, and then Apple's verification takes another one to three weeks after that. So realistically this is a month before we can submit anything.
+
+What I need from you:
+
+  a. Look up whether North Comm already has a D-U-N-S number (a lot of companies do and don't know it). Free lookup here: https://www.dnb.com/duns-number/lookup.html
+     If there isn't one, request one on that same site. Free.
+
+  b. Once you have the D-U-N-S, enroll at https://developer.apple.com/programs/enroll/
+     Enroll as an Organization, not an Individual. Use the legal business name exactly as it appears on your incorporation paperwork, or Apple will kick it back.
+
+  c. Tell me when it's approved and I'll handle the rest of the submission.
+
+3) ONE SMALL THING I'LL NEED LATER
+
+Apple requires a working test login so their reviewer can get into the app. Once step 1 is done, I'll create a review account in your Supabase and give you the details for your records. Nothing for you to do yet.
+
+Everything else on my side is done: the app is built, it compiles for iPhone on its own, the store listing and screenshots are written, and the privacy paperwork is filled out.
+
+Meanwhile, adding a new report is unchanged and you never need me for it. In Supabase, go to Storage, open the reports bucket, and upload the PDF named after the serial, like NC-121483.pdf. Scanning that serial pulls it right up.
 
 Any questions, just text me.
 

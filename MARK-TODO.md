@@ -15,6 +15,21 @@ Only you can do these steps because they need your Supabase login. Should take a
 5. Click the green **Run** button (bottom right).
    (When it says success, you are done. The app is now live and secure.)
 
+
+## The Apple one (start this now, it takes about a month)
+
+To get ScanSpec on the App Store, North Comm needs its own Apple Developer account in the
+business name. Apple verifies the business first, and that is the slow part.
+
+1. Check whether North Comm already has a D-U-N-S number (many companies do without knowing).
+   Free lookup: https://www.dnb.com/duns-number/lookup.html
+   If there is not one, request it on that same page. It is free and takes 1-2 weeks.
+2. Once you have the D-U-N-S, enroll at https://developer.apple.com/programs/enroll/
+   Choose **Organization**, not Individual. $99/year.
+   Use the legal business name exactly as it appears on your incorporation paperwork.
+   Apple's verification takes another 1-3 weeks.
+3. Tell Jack when it is approved. He handles the submission from there.
+
 ## Your everyday step: adding a new report
 
 Do this any time you have a new spec sheet. No developer needed.
