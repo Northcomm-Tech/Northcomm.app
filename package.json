@@ -1,0 +1,27 @@
+{
+  "name": "northcomm-scanspec",
+  "version": "1.0.0",
+  "description": "Concept demo: scan the QR label on any assembly and instantly pull up its branded spec sheet, with a real PDF download.",
+  "main": "jsQR.min.js",
+  "scripts": {
+    "build:web": "node scripts/copy-web.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wingdigital26-maker/northcomm-scanspec.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/wingdigital26-maker/northcomm-scanspec/issues"
+  },
+  "homepage": "https://github.com/wingdigital26-maker/northcomm-scanspec#readme",
+  "dependencies": {
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1"
+  }
+}

@@ -1,0 +1,152 @@
+name: iOS build
+
+# Builds the Northcomm ScanSpec iOS app on a GitHub-hosted macOS runner
+# (no Mac needed locally). Run it from the Actions tab: "iOS build" > Run workflow.
+#
+# WITHOUT signing secrets: it produces an UNSIGNED archive, which proves the app
+# compiles end to end. This is what runs today, before Apple enrollment.
+#
+# WITH signing secrets (add these in the repo: Settings > Secrets and variables >
+# Actions), it also signs, exports a .ipa, and uploads it to App Store Connect:
+#   BUILD_CERTIFICATE_BASE64   - your Apple distribution cert (.p12), base64-encoded
+#   P12_PASSWORD               - the password you set on that .p12
+#   PROVISIONING_PROFILE_BASE64- the App Store provisioning profile, base64-encoded
+#   APPSTORE_ISSUER_ID         - App Store Connect API key: Issuer ID
+#   APPSTORE_KEY_ID            - App Store Connect API key: Key ID
+#   APPSTORE_PRIVATE_KEY       - App Store Connect API key: the .p8 file contents
+#   TEAM_ID                    - your 10-char Apple Developer Team ID
+# NATIVE-BUILD.md explains where to get each one.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Bundle web assets into www/
+        run: npm run build:web
+
+      - name: Add + sync the iOS platform
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Set camera permission string in Info.plist
+        run: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSCameraUsageDescription string 'Northcomm ScanSpec uses the camera to scan QR labels on assemblies.'" \
+            "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c \
+            "Set :NSCameraUsageDescription 'Northcomm ScanSpec uses the camera to scan QR labels on assemblies.'" \
+            "$PLIST"
+
+      - name: Install CocoaPods
+        working-directory: ios/App
+        run: pod install
+
+      # ---- Detect whether signing secrets are present ----
+      - name: Check for signing secrets
+        id: signing
+        run: |
+          if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ] && [ -n "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Signing secrets found: will build a signed, uploadable build."
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "No signing secrets: building an UNSIGNED archive (compile proof only)."
+          fi
+
+      # ---- Path A: no secrets yet -> prove it compiles ----
+      - name: Build unsigned archive (compile proof)
+        if: steps.signing.outputs.available == 'false'
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath build/App.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+      # ---- Path B: secrets present -> sign, export, upload ----
+      - name: Import signing certificate
+        if: steps.signing.outputs.available == 'true'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+
+      - name: Install provisioning profile
+        if: steps.signing.outputs.available == 'true'
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/northcomm.mobileprovision
+
+      - name: Build + sign archive
+        if: steps.signing.outputs.available == 'true'
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath build/App.xcarchive \
+            archive \
+            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
+            -allowProvisioningUpdates
+
+      - name: Export .ipa
+        if: steps.signing.outputs.available == 'true'
+        run: |
+          cat > build/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store</string>
+            <key>teamID</key><string>${{ secrets.TEAM_ID }}</string>
+            <key>uploadSymbols</key><true/>
+            <key>signingStyle</key><string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportOptionsPlist build/ExportOptions.plist \
+            -exportPath build/export \
+            -allowProvisioningUpdates
+
+      - name: Upload to App Store Connect
+        if: steps.signing.outputs.available == 'true'
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.APPSTORE_PRIVATE_KEY }}" > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          IPA=$(ls build/export/*.ipa | head -1)
+          xcrun altool --upload-app -f "$IPA" -t ios \
+            --apiKey ${{ secrets.APPSTORE_KEY_ID }} \
+            --apiIssuer ${{ secrets.APPSTORE_ISSUER_ID }}
+
+      - name: Save build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-archive
+          path: |
+            build/App.xcarchive
+            build/export/*.ipa
+          if-no-files-found: warn

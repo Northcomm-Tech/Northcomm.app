@@ -1,0 +1,8 @@
+{
+  "appId": "com.northcomm.scanspec",
+  "appName": "Northcomm ScanSpec",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always"
+  }
+}
