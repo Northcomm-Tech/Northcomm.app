@@ -73,7 +73,7 @@ jobs:
         if: steps.signing.outputs.available == 'false'
         run: |
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            -project ios/App/App.xcodeproj \
             -scheme App \
             -configuration Release \
             -destination "generic/platform=iOS" \
@@ -100,7 +100,7 @@ jobs:
         if: steps.signing.outputs.available == 'true'
         run: |
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            -project ios/App/App.xcodeproj \
             -scheme App \
             -configuration Release \
             -destination "generic/platform=iOS" \
