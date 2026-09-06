@@ -128,8 +128,8 @@ account created in Northcomm's Supabase, kept alive for as long as the app is on
 >
 > Sign in with the demo account provided above. To test without physical hardware, tap
 > "Browse reports on file" on the home screen to see the catalogue and open any report
-> directly. A scannable sample QR label is also on
-> https://northcomm-tech.github.io/Northcomm.app/ so you can point the app at another screen.
+> directly. To scan a physical label, sign in on a second device, open "Browse reports on file", and point
+> this app's scanner at the QR code shown there.
 >
 > The account is used only to sync scan history. It can be deleted from
 > Settings > Delete my account.

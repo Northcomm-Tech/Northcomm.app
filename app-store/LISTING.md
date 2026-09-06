@@ -109,7 +109,7 @@ Declare exactly the two data types below. Everything else: **not collected**.
 - Linked to the user's identity: **Yes** (it is the account identifier)
 - Used for tracking: **No**
 - Purposes: **App Functionality** only
-  (used to create and access the optional account; not used for advertising, analytics,
+  (used to create and access the required account; not used for advertising, analytics,
   or product personalization)
 
 ### 2. User Content > Other User Content  (the user's scan history)
@@ -127,15 +127,14 @@ Notes for whoever fills the form:
   whole app. There is no third-party advertising and no analytics SDK.
 - Data is NOT used for Third-Party Advertising, Developer's Advertising, Analytics, or
   Product Personalization. App Functionality is the only purpose for both types.
-- The app can be used with no account at all; when used signed-out, neither data type is
-  collected.
+- An account is required to use the app, so both data types are collected from every user.
 
 ---
 
 ## What to Prepare Before Submitting
 
 1. **Reviewer sign-in demo credentials (ACTION NEEDED - Jack must create this).**
-   The app has optional Supabase email/password sign-in. Even though sign-in is optional,
+   The app has required Supabase email/password sign-in.
    Apple reviewers will test it. Create a dedicated test account (for example
    reviewer@northcommtechnologies.com) with a known password and enter it in App Store
    Connect under App Review Information > Sign-In Required > demo account. Do NOT reuse a
@@ -146,8 +145,7 @@ Notes for whoever fills the form:
    "Northcomm ScanSpec is a free utility for North Comm Technologies, a manufacturer of
    RF cable assemblies. The app uses the device camera to scan a QR label printed on an
    assembly. The QR code contains that unit's serial number. The app reads the serial and
-   fetches that assembly's factory test report / spec sheet PDF. Sign-in is optional and
-   only saves scan history across devices; the app is fully usable signed out. To test
+   fetches that assembly's factory test report / spec sheet PDF. An account is required; the demo credentials in App Review Information sign the reviewer in. To test
    the scanner without a physical label, use the sample QR shown in one of the
    screenshots (or open the live web version at
    https://northcomm-tech.github.io/Northcomm.app/). Account deletion is available in-app.

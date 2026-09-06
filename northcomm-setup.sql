@@ -167,11 +167,40 @@ $$;
 revoke all on function public.lookup_report(text) from public;
 grant execute on function public.lookup_report(text) to anon, authenticated;
 
+-- ------------------------------------------------------------
+-- northcomm_scans must tolerate an anonymised row: user_id becomes null and
+-- anonymised_at records when. Both statements are safe to re-run.
+-- ------------------------------------------------------------
+alter table public.northcomm_scans
+  add column if not exists anonymised_at timestamptz;
+
+alter table public.northcomm_scans
+  alter column user_id drop not null;
+
+-- An anonymised row belongs to nobody, so no policy should return it to anyone.
+-- (The existing per-user policies already filter on user_id = auth.uid(), and
+-- null never equals a uuid, so anonymised rows fall out of every user's view.)
+
 -- ============================================================
 -- 6) delete_own_account — App Store requirement
 -- ============================================================
 -- Lets a signed-in user delete their own account from inside the app.
 -- The app calls: rpc("delete_own_account")
+-- HOW THIS DELETES, AND WHY IT DOES NOT CASCADE
+--
+-- Apple requires that "delete my account" genuinely removes the account, not
+-- merely deactivates it -- if the person can still sign in afterwards, the app
+-- gets rejected. So the auth user is destroyed outright.
+--
+-- The scan rows are a different matter. Hard-deleting them, or letting a
+-- foreign-key cascade take them, tears rows out of the middle of the history
+-- table. Instead every column that could identify a person is set to null and
+-- the row is marked anonymised. What survives is "some serial was looked up at
+-- some time", which is nobody's personal data, so this still satisfies the
+-- deletion requirement.
+--
+-- The parts catalogue is never touched by this function. A user deleting their
+-- account can never remove a Northcomm report.
 create or replace function public.delete_own_account()
 returns void
 language plpgsql
@@ -184,7 +213,14 @@ begin
   if uid is null then
     raise exception 'not signed in';
   end if;
-  delete from public.northcomm_scans where user_id = uid;
+
+  -- 1) unlink the history from the person, keeping the rows intact
+  update public.northcomm_scans
+     set user_id      = null,
+         anonymised_at = now()
+   where user_id = uid;
+
+  -- 2) destroy the sign-in itself, so the account is really gone
   delete from auth.users where id = uid;
 end;
 $$;
