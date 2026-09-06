@@ -17,6 +17,8 @@ const www = path.join(root, "www");
 const FILES = [
   "index.html",
   "jsQR.min.js",
+  "vendor-supabase.min.js",
+  "vendor-qrcode.min.js",
   "sw.js",
   "manifest.webmanifest",
   "icon-180.png",

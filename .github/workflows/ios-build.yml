@@ -24,6 +24,8 @@ jobs:
   build:
     runs-on: macos-14
     timeout-minutes: 40
+    env:
+      APP_VERSION: "1.0.0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,6 +45,15 @@ jobs:
         run: |
           npx cap add ios
           npx cap sync ios
+
+      - name: Generate app icon + launch screen
+        run: npx capacitor-assets generate --ios
+
+      - name: Set home-screen name in Info.plist
+        run: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string 'ScanSpec'" "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName 'ScanSpec'" "$PLIST"
 
       - name: Set camera permission string in Info.plist
         run: |
@@ -79,6 +90,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath build/App.xcarchive \
             archive \
+            MARKETING_VERSION=$APP_VERSION CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
       # ---- Path B: secrets present -> sign, export, upload ----
@@ -106,6 +118,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath build/App.xcarchive \
             archive \
+            MARKETING_VERSION=$APP_VERSION CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
             -allowProvisioningUpdates
 
