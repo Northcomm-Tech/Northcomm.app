@@ -172,33 +172,35 @@
     font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px}
   .applebtn svg{width:18px;height:18px;fill:currentColor}
   [data-theme="dark"] .applebtn{background:#fff;color:#000}
-  .authdiv{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:13px}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .applebtn{background:#fff;color:#000}}
+  .authdiv{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--steel);font-size:13px}
   .authdiv:before,.authdiv:after{content:"";flex:1;height:1px;background:var(--line)}
 
   /* Settings / My account */
-  .setwrap{padding:0 18px 28px}
-  .setgroup{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
+  .setwrap{padding:0 18px calc(28px + env(safe-area-inset-bottom))}
+  .setgroup{background:var(--mist);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
   .setgroup h3{margin:0;padding:12px 16px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--muted);background:transparent;border-bottom:1px solid var(--line);font-weight:600}
+    color:var(--steel);background:transparent;border-bottom:1px solid var(--line);font-weight:600}
   .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;
     width:100%;min-height:52px;padding:12px 16px;background:none;border:0;border-bottom:1px solid var(--line);
-    font-size:16px;color:var(--fg);font-family:inherit;text-align:left;cursor:pointer}
+    font-size:16px;color:var(--text);font-family:inherit;text-align:left;cursor:pointer}
   .setrow:last-child{border-bottom:0}
-  .setrow .v{color:var(--muted);font-size:15px;overflow-wrap:anywhere;min-width:0}
+  .setrow .v{color:var(--steel);font-size:15px;overflow-wrap:anywhere;min-width:0}
   .setrow.static{cursor:default}
   .setrow.danger{color:#c0341d}
   [data-theme="dark"] .setrow.danger{color:#ff7a5c}
-  .setnote{padding:0 4px;margin:-8px 0 18px;font-size:13px;line-height:1.5;color:var(--muted)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .setrow.danger{color:#ff7a5c}}
+  .setnote{padding:0 4px;margin:-8px 0 18px;font-size:13px;line-height:1.5;color:var(--steel)}
 
   /* Camera explainer, shown before the OS permission prompt */
-  .camwrap{padding:24px 22px 30px;max-width:420px;margin:0 auto;text-align:center}
+  .camwrap{padding:24px 22px calc(30px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;text-align:center}
   .camwrap .camicon{width:64px;height:64px;margin:8px auto 18px;color:var(--signal)}
   .camwrap .btn{width:100%}
   .camwrap h2{margin:0 0 10px;font-size:22px}
-  .camwrap p{margin:0 0 16px;font-size:15px;line-height:1.55;color:var(--muted)}
+  .camwrap p{margin:0 0 16px;font-size:15px;line-height:1.55;color:var(--steel)}
   .camlist{text-align:left;margin:0 0 22px;padding:0;list-style:none}
   .camlist li{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;font-size:15px;line-height:1.5}
-  .camlist .tick{color:var(--accent);flex:0 0 auto;font-weight:700}
+  .camlist .tick{color:var(--signal);flex:0 0 auto;font-weight:700}
   /* Dark theme keeps the report slab dark, so #fff on it stays readable. */
   [data-theme="dark"]{--err:#ff6b5a}
   @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--err:#ff6b5a}}
@@ -221,7 +223,7 @@
   .installhint .x{width:44px;height:44px;display:flex;align-items:center;justify-content:center;
     margin:-11px -11px -11px 0;flex:0 0 auto}
   .clear,.simbtn,.retrybtn{min-height:44px}
-  .footlinks a{display:inline-block;padding:12px 8px}
+  .footlinks a{display:inline-block;padding:16px 8px;min-height:44px;box-sizing:border-box}
   #zoomSlider{height:44px;touch-action:pan-x}
 
   /* Landscape on a notched device would otherwise slide content under the notch. */
@@ -298,7 +300,6 @@
       </div>
       <div class="rlist" id="rlist"></div>
       <div class="acctfoot hidden" id="acctFoot">
-        <button class="linkbtn" id="deleteAcctBtn">Delete my account</button>
         <div class="footlinks"><a href="privacy.html">Privacy</a> &middot; <a href="support.html">Support</a></div>
       </div>
     </div>
@@ -309,7 +310,7 @@
 
   <!-- SAMPLES -->
   <div class="view hidden" id="samplesView">
-    <div class="pad"><button class="btn btn-ghost" id="backFromSamples" style="padding:11px">&larr; Back</button></div>
+    <div class="pad"><button class="btn btn-ghost" id="backFromSamples" style="padding:11px;min-height:44px">&larr; Back</button></div>
     <div class="samples">
       <p>Every report currently on file. Print a QR for the label, scan one with a second phone, or tap <b>Open report</b> to pull it up.</p>
       <input id="reportSearch" class="searchbox" type="search" placeholder="Search by serial" autocapitalize="characters" autocomplete="off">
@@ -319,7 +320,7 @@
 
   <!-- SETTINGS / MY ACCOUNT -->
   <div class="view hidden" id="settingsView">
-    <div class="pad"><button class="btn btn-ghost" id="backFromSettings" style="padding:11px">&larr; Back</button></div>
+    <div class="pad"><button class="btn btn-ghost" id="backFromSettings" style="padding:11px;min-height:44px">&larr; Back</button></div>
     <div class="setwrap">
       <div class="setgroup">
         <h3>My account</h3>
@@ -352,7 +353,7 @@
 
   <!-- CAMERA EXPLAINER, shown once before the OS permission prompt -->
   <div class="view hidden" id="camView">
-    <div class="pad"><button class="btn btn-ghost" id="backFromCam" style="padding:11px">&larr; Back</button></div>
+    <div class="pad"><button class="btn btn-ghost" id="backFromCam" style="padding:11px;min-height:44px">&larr; Back</button></div>
     <div class="camwrap">
       <svg class="camicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
       <h2>ScanSpec needs your camera</h2>
@@ -408,10 +409,23 @@ const IS_NATIVE=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform===
 function show(name){for(const k in views)views[k].classList.toggle("hidden",k!==name);window.scrollTo(0,0);}
 
 /* theme toggle */
-$("themeBtn").onclick=()=>{
+const THEME_KEY="northcomm_theme";
+function applyTheme(v){
   const r=document.documentElement;
-  const dark=r.getAttribute("data-theme")==="dark"||(!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);
-  r.setAttribute("data-theme",dark?"light":"dark");
+  if(v==="light"||v==="dark")r.setAttribute("data-theme",v);
+  else r.removeAttribute("data-theme");
+  try{v?localStorage.setItem(THEME_KEY,v):localStorage.removeItem(THEME_KEY)}catch(e){}
+}
+function currentThemeIsDark(){
+  const r=document.documentElement;
+  return r.getAttribute("data-theme")==="dark"||
+    (!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);
+}
+/* Restore the last choice before anything paints. */
+try{const saved=localStorage.getItem(THEME_KEY);if(saved)applyTheme(saved);}catch(e){}
+$("themeBtn").onclick=()=>{
+  applyTheme(currentThemeIsDark()?"light":"dark");
+  try{reflectThemeLabel()}catch(e){}
 };
 
 /* --- Supabase auth + scan history --- */
@@ -445,7 +459,7 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 function renderRecent(){
   const list=$("rlist");list.innerHTML="";
   $("clearBtn").classList.toggle("hidden",scans.length===0);
-  if(!scans.length){list.innerHTML='<div class="empty">No scans yet. Scan a label or try a sample code to get started.</div>';return;}
+  if(!scans.length){list.innerHTML='<div class="empty">No scans yet. Scan a label, or browse the reports on file, to get started.</div>';return;}
   scans.forEach(row=>{
     const code=row.code,title=row.title||(CATALOG[code]&&CATALOG[code].title)||code;
     const b=document.createElement("button");b.className="ritem";
@@ -454,8 +468,15 @@ function renderRecent(){
   });
 }
 async function clearScans(){
-  if(session){try{await supa.from("northcomm_scans").delete().neq("code","");}catch(e){}}
+  let ok=true;
+  if(session){
+    try{
+      const {error}=await supa.from("northcomm_scans").delete().eq("user_id",session.user.id);
+      if(error)ok=false;
+    }catch(e){ok=false;}
+  }
   cacheSet([]);scans=[];renderRecent();
+  return ok;
 }
 $("clearBtn").onclick=clearScans;
 
@@ -512,33 +533,38 @@ async function deleteAccount(){
     const {error}=await supa.rpc("delete_own_account");
     if(error)throw error;
     try{localStorage.removeItem(cacheKey());}catch(e){}
-    await supa.auth.signOut();
+    /* The account is gone at this point. Signing out talks to the server with a
+       token whose user no longer exists, so it may fail -- that must never be
+       reported as "the delete failed". */
+    try{await supa.auth.signOut({scope:"local"});}catch(e2){}
+    session=null;scans=[];reflectAuth();
     alert("Your account has been deleted.");
+    return;
   }catch(e){
     alert("Could not delete the account just now. Please try again, or email support@northcomm.app");
   }
 }
-$("deleteAcctBtn").onclick=deleteAccount;
 $("setDelete").onclick=deleteAccount;
 
 /* --- Settings / My account --- */
-function themeIsDark(){
-  const r=document.documentElement;
-  return r.getAttribute("data-theme")==="dark"||
-    (!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);
-}
-function reflectThemeLabel(){$("setThemeVal").textContent=themeIsDark()?"Dark":"Light";}
-$("settingsBtn").onclick=()=>{reflectThemeLabel();show("settings");};
-$("backFromSettings").onclick=()=>show("home");
+function reflectThemeLabel(){$("setThemeVal").textContent=currentThemeIsDark()?"Dark":"Light";}
+let settingsReturnTo="home";
+$("settingsBtn").onclick=()=>{
+  for(const k in views){if(!views[k].classList.contains("hidden")){settingsReturnTo=k;break;}}
+  if(settingsReturnTo==="settings"||settingsReturnTo==="cam")settingsReturnTo="home";
+  reflectThemeLabel();show("settings");
+};
+$("backFromSettings").onclick=()=>show(settingsReturnTo);
 $("setSignOut").onclick=async()=>{await supa.auth.signOut();};
 $("setTheme").onclick=()=>{
-  document.documentElement.setAttribute("data-theme",themeIsDark()?"light":"dark");
+  applyTheme(currentThemeIsDark()?"light":"dark");
   reflectThemeLabel();
 };
 $("setClear").onclick=async()=>{
   if(!confirm("Clear your scan history?"))return;
-  await clearScans();
-  alert("Scan history cleared.");
+  const ok=await clearScans();
+  alert(ok?"Scan history cleared."
+         :"Cleared on this device, but the server copy could not be reached. It will still be there when you sign in again.");
 };
 $("setPrivacy").onclick=()=>{location.href="privacy.html";};
 $("setSupport").onclick=()=>{location.href="support.html";};
@@ -552,8 +578,12 @@ $("setSupport").onclick=()=>{location.href="support.html";};
 const APPLE_SIGNIN_ENABLED=false;
 function maybeShowApple(){
   if(!APPLE_SIGNIN_ENABLED)return;
-  const isApplePlatform=IS_NATIVE||/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent);
-  if(!isApplePlatform)return;
+  /* Deliberately NOT offered inside the native shell: signInWithOAuth opens the
+     system browser and redirects to location.origin, which is capacitor://localhost
+     there -- the user would land in Safari and never come back. Native needs
+     Apple's own sign-in plugin feeding supa.auth.signInWithIdToken instead. */
+  if(IS_NATIVE)return;
+  if(!/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent))return;
   $("appleBtn").classList.remove("hidden");
   $("authDivider").classList.remove("hidden");
 }
@@ -639,7 +669,7 @@ async function openResult(code){
     saveScan(rec.part,rec.title);
     const real=!!rec.pdfUrl;
     box.innerHTML=`
-      <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
+      <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px;min-height:44px" onclick="goHome()">&larr; Home</button></div>
       <div class="sheet">
         <div class="sheet-head">
           <div class="k">${real?"Test report":"Spec sheet"}</div><h2>${esc(rec.title)}</h2>
@@ -673,7 +703,7 @@ async function openResult(code){
     let openUrl=null;
     if(isUrl){try{const u=new URL(code);if(u.protocol==="http:"||u.protocol==="https:")openUrl=u.href;}catch(e){}}
     box.innerHTML=`
-      <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px" onclick="goHome()">&larr; Home</button></div>
+      <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px;min-height:44px" onclick="goHome()">&larr; Home</button></div>
       <div class="msg">
         <div class="big">${openUrl?"This label links out":"No report on file yet"}</div>
         <div class="sub">${openUrl?"The scanned QR points to a web address:":"Scanned value:"}</div>
@@ -696,6 +726,14 @@ let stream=null,raf=null,track=null,torchOn=false,scanning=false,frameNo=0,
 let detector=null;
 if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]});}catch(e){detector=null;}}
 async function startScan(){
+  /* Every route to the camera goes through here, so the explainer gate lives
+     here too -- "Scan another", "Scan again" and "Retry camera" included.
+     iOS only ever asks for camera permission once, so the ask has to be
+     understood the first time. */
+  if(!camExplained()){show("cam");return;}
+  return startScanNow();
+}
+async function startScanNow(){
   show("home");$("scanner").classList.remove("hidden");
   $("torchBtn").classList.add("hidden");torchOn=false;$("torchBtn").classList.remove("on");
   try{
@@ -704,7 +742,6 @@ async function startScan(){
       facingMode:{ideal:"environment"},
       width:{ideal:2560},height:{ideal:1440}
     }});
-    localStorage.setItem("cam_granted","1");
     const v=$("video");v.srcObject=stream;await v.play();
     $("scanHint").innerHTML='Point at a <b>QR label</b> &mdash; it reads automatically';
     track=stream.getVideoTracks()[0];
@@ -796,13 +833,10 @@ function stopScan(){
    camera on every later scan. */
 const CAM_SEEN_KEY="northcomm_cam_explained";
 function camExplained(){try{return localStorage.getItem(CAM_SEEN_KEY)==="1"}catch(e){return false}}
-$("scanBtn").onclick=()=>{
-  if(camExplained())return startScan();
-  show("cam");
-};
+$("scanBtn").onclick=startScan;
 $("camAllow").onclick=()=>{
   try{localStorage.setItem(CAM_SEEN_KEY,"1")}catch(e){}
-  show("home");startScan();
+  show("home");startScanNow();
 };
 $("backFromCam").onclick=()=>show("home");
 $("camManual").onclick=()=>{
@@ -894,7 +928,7 @@ $("manualInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitManual(
 })();
 
 /* offline: register service worker */
-if("serviceWorker"in navigator){
+if("serviceWorker"in navigator&&!IS_NATIVE){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
 

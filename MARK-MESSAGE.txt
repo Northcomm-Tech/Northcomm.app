@@ -12,7 +12,7 @@ Log in to your Northcomm Supabase project, open SQL Editor in the left menu, pas
 
 2) THE APPLE ONE (start now, it's the long pole)
 
-To put ScanSpec on the App Store, Northcomm needs its own Apple Developer account. It has to be in the business name, not your personal Apple ID, and it costs $99/year.
+To put ScanSpec on the App Store, North Comm needs its own Apple Developer account. It has to be in the business name, not your personal Apple ID, and it costs $99/year.
 
 The slow part is that Apple verifies the business, and to do that they need a D-U-N-S number for North Comm Technologies. That's free from Dun & Bradstreet but takes a week or two on its own, and then Apple's verification takes another one to three weeks after that. So realistically this is a month before we can submit anything.
 
@@ -30,7 +30,7 @@ What I need from you:
 
 Apple requires a working test login so their reviewer can get into the app. Once step 1 is done, I'll create a review account in your Supabase and give you the details for your records. Nothing for you to do yet.
 
-Everything else on my side is done: the app is built, it compiles for iPhone on its own, the store listing and screenshots are written, and the privacy paperwork is filled out.
+Everything else on my side is done: the app is built, it compiles for iPhone on its own, the store listing copy is written, and the privacy paperwork is filled out.
 
 Meanwhile, adding a new report is unchanged and you never need me for it. In Supabase, go to Storage, open the reports bucket, and upload the PDF named after the serial, like NC-121483.pdf. Scanning that serial pulls it right up.
 

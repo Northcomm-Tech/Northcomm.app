@@ -1,15 +1,16 @@
-const CACHE = "northcomm-specs-v32";
+const CACHE = "northcomm-specs-3";
 const ASSETS = [
   "./",
   "./index.html",
+  "./privacy.html",
+  "./support.html",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",
   "./icon-512.png",
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
   "./jsQR.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+  "./vendor-supabase.min.js",
+  "./vendor-qrcode.min.js"
 ];
 
 self.addEventListener("install", e => {

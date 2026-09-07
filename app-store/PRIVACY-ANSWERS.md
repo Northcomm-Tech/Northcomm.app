@@ -83,14 +83,15 @@ App Tracking Transparency prompt is needed. Do not add the ATT framework.
 Apple requires any app with account creation to offer in-app account deletion.
 
 - The app has it: **Settings > Delete my account**, which calls the `delete_own_account()`
-  database function and removes the account and its scan history.
+  database function. Your sign-in is destroyed, and your scan history is permanently
+  unlinked from you so it can no longer be traced to any person.
 - **This only works once `northcomm-setup.sql` has been run on the Supabase project.** If
   that has not been run, deletion fails and the app will be rejected on this point. Confirm
   it works on a real device before submitting.
 
 When the review form asks how a user deletes their account, answer: "Sign in, open Settings
-in the app, and tap Delete my account. This permanently deletes the account and all of its
-scan history."
+in the app, and tap Delete my account. This permanently destroys the sign-in and permanently
+unlinks all of that account's scan history from the person, so it can never be traced back."
 
 ---
 

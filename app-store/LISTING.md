@@ -39,7 +39,7 @@ KEY FEATURES
 
 YOUR ACCOUNT
 
-ScanSpec asks you to sign in with your email address the first time you open it. That account keeps your scan history saved and synced across your devices. It is free, and you can delete your account and its data from inside the app at any time.
+ScanSpec asks you to sign in with your email address the first time you open it. That account keeps your scan history saved and synced across your devices. It is free, and you can delete your account from inside the app at any time at any time.
 
 PRIVACY
 
@@ -112,7 +112,7 @@ Declare exactly the two data types below. Everything else: **not collected**.
   (used to create and access the required account; not used for advertising, analytics,
   or product personalization)
 
-### 2. User Content > Other User Content  (the user's scan history)
+### 2. Usage Data > Product Interaction  (the user's scan history)
 - Collected: **Yes**
 - Linked to the user's identity: **Yes** (tied to the account when signed in)
 - Used for tracking: **No**
@@ -120,8 +120,8 @@ Declare exactly the two data types below. Everything else: **not collected**.
   (saved so scan history syncs across the user's devices)
 
 Notes for whoever fills the form:
-- If App Store Connect does not offer a clean "scan history" fit under User Content, use
-  **User Content > Other User Content**. Do not declare Browsing History, Usage Data, or
+- Scan history is declared as **Usage Data > Product Interaction**, matching
+  app-store/PRIVACY-ANSWERS.md. Do not declare Browsing History, User Content, or
   Identifiers, because the app does not collect those.
 - Answer **No** to "Do you or your third-party partners use data for tracking?" for the
   whole app. There is no third-party advertising and no analytics SDK.
@@ -136,7 +136,7 @@ Notes for whoever fills the form:
 1. **Reviewer sign-in demo credentials (ACTION NEEDED - Jack must create this).**
    The app has required Supabase email/password sign-in.
    Apple reviewers will test it. Create a dedicated test account (for example
-   reviewer@northcommtechnologies.com) with a known password and enter it in App Store
+   appreview@northcommtechnologies.com) with a known password and enter it in App Store
    Connect under App Review Information > Sign-In Required > demo account. Do NOT reuse a
    real customer account. Confirm the account can sign in on the live app before
    submitting.
@@ -148,7 +148,7 @@ Notes for whoever fills the form:
    fetches that assembly's factory test report / spec sheet PDF. An account is required; the demo credentials in App Review Information sign the reviewer in. To test
    the scanner without a physical label, use the sample QR shown in one of the
    screenshots (or open the live web version at
-   https://northcomm-tech.github.io/Northcomm.app/). Account deletion is available in-app.
+   https://northcomm-tech.github.io/Northcomm.app/). Account deletion is available in-app (requires northcomm-setup.sql to have been run).
    No ads, no analytics, no third-party tracking."
 
 3. **A scannable sample QR** for the reviewer (a serial that resolves to a real PDF).

@@ -89,40 +89,7 @@ exception when others then
 end $$;
 
 -- ============================================================
--- 4) Auto-sync trigger — upload NC-<serial>.pdf, get a part row
--- ============================================================
--- When a PDF named <SERIAL>.pdf lands in the "reports" bucket, create or
--- refresh the matching part row pointing at that PDF.
-create or replace function public.sync_report_to_part()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_serial text;
-begin
-  if new.bucket_id <> 'reports' then return new; end if;
-  if new.name !~* '\.pdf$' then return new; end if;
-
-  v_serial := upper(regexp_replace(new.name, '\.pdf$', '', 'i'));
-
-  -- pdf_url stores just the object name; the app builds the full public URL
-  insert into public.northcomm_parts (serial, title, pdf_url, result)
-  values (v_serial, 'RF Cable Assembly Test Report', new.name, 'PASS')
-  on conflict (serial) do update
-    set pdf_url = excluded.pdf_url;
-
-  return new;
-end;
-$$;
-
-create or replace trigger trg_sync_report_to_part
-after insert on storage.objects
-for each row execute function public.sync_report_to_part();
-
--- ============================================================
--- 5) lookup_report — how anonymous scanning stays safe
+-- 4) lookup_report — how anonymous scanning stays safe
 -- ============================================================
 -- Scanning stays account-free: one serial in, at most one report out. This
 -- runs as owner, so it sees past the "signed-in only" policy on the parts
@@ -182,7 +149,7 @@ alter table public.northcomm_scans
 -- null never equals a uuid, so anonymised rows fall out of every user's view.)
 
 -- ============================================================
--- 6) delete_own_account — App Store requirement
+-- 5) delete_own_account — App Store requirement
 -- ============================================================
 -- Lets a signed-in user delete their own account from inside the app.
 -- The app calls: rpc("delete_own_account")
@@ -228,3 +195,46 @@ $$;
 -- signed-in users only.
 revoke all on function public.delete_own_account() from public;
 grant execute on function public.delete_own_account() to authenticated;
+
+
+-- ============================================================
+-- 6) Auto-sync trigger — upload NC-<serial>.pdf, get a part row
+-- ============================================================
+-- When a PDF named <SERIAL>.pdf lands in the "reports" bucket, create or
+-- refresh the matching part row pointing at that PDF.
+create or replace function public.sync_report_to_part()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_serial text;
+begin
+  if new.bucket_id <> 'reports' then return new; end if;
+  if new.name !~* '\.pdf$' then return new; end if;
+
+  v_serial := upper(regexp_replace(new.name, '\.pdf$', '', 'i'));
+
+  -- pdf_url stores just the object name; the app builds the full public URL
+  insert into public.northcomm_parts (serial, title, pdf_url, result)
+  values (v_serial, 'RF Cable Assembly Test Report', new.name, 'PASS')
+  on conflict (serial) do update
+    set pdf_url = excluded.pdf_url;
+
+  return new;
+end;
+$$;
+
+-- storage.objects is owned by Supabase's storage role, so on some projects this
+-- trigger cannot be created from the SQL editor. That must not abort the rest of
+-- the script, so it is allowed to fail loudly but harmlessly. Everything the app
+-- needs at runtime is already created above this point.
+do $$
+begin
+  create or replace trigger trg_sync_report_to_part
+  after insert on storage.objects
+  for each row execute function public.sync_report_to_part();
+exception when others then
+  raise notice 'Auto-sync trigger not installed (%). Reports still open normally; new part rows may need adding by hand.', sqlerrm;
+end $$;
