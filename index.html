@@ -100,6 +100,11 @@
   .pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
   .pill{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:5px;background:var(--slab);color:#fff}
   .pill.ghost{background:transparent;color:var(--steel);border:1px solid var(--line)}
+  /* A test-report result is the payoff of the whole scan -- a FAIL buried in a
+     neutral grey pill next to "Test report" is easy to miss under time pressure.
+     Color-codes it, but the word PASS/FAIL is still the actual signal (not color alone). */
+  .pill.pill-fail{background:#c0392b}
+  .pill.pill-pass{background:#1c7a4d}
   .doc h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);margin:20px 0 9px;font-weight:600}
   .desc{font-size:14px;line-height:1.65;color:var(--text)}
   .spectable{width:100%;border-collapse:collapse;font-size:13.5px;table-layout:fixed}
@@ -714,7 +719,7 @@ async function openResult(code){
           <div><div class="fn">${real?esc(rec.file):esc(rec.part)+"_spec.pdf"}</div><div class="fs">${real?"Rohde &amp; Schwarz sweep report":"Northcomm Technologies"}</div></div>
         </div>
         <div class="doc">
-          <div class="pillrow">${rec.tags.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
+          <div class="pillrow">${rec.tags.map(t=>`<span class="pill${/fail/i.test(t)?" pill-fail":/^pass$/i.test(t)?" pill-pass":""}">${esc(t)}</span>`).join("")}${real?"":'<span class="pill ghost">Rev A</span>'}</div>
           <h3>${real?"Summary":"Description"}</h3><p class="desc">${esc(rec.desc)}</p>
           ${rec.specs.length?`<h3>${real?"Key measurements":"Specifications"}</h3>
           <table class="spectable">${rec.specs.map(s=>`<tr><td>${esc(s[0])}</td><td>${esc(s[1])}</td></tr>`).join("")}</table>`:""}
