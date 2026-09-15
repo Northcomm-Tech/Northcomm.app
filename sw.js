@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-3";
+const CACHE = "northcomm-specs-4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -44,7 +44,12 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  // cache-first for static assets (icons, libs)
+  // never cache cross-origin API calls (Supabase spec data must stay fresh)
+  if (new URL(req.url).origin !== self.location.origin) {
+    e.respondWith(fetch(req));
+    return;
+  }
+  // cache-first for same-origin static assets (icons, libs)
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
