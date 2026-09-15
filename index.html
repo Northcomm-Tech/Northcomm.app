@@ -324,7 +324,7 @@
     <div class="setwrap">
       <div class="setgroup">
         <h3>My account</h3>
-        <div class="setrow static"><span>Signed in as</span><span class="v" id="setEmail">&mdash;</span></div>
+        <div class="setrow static"><span>Signed in as</span><span class="v" id="setEmail">-</span></div>
         <button class="setrow" id="setSignOut"><span>Sign out</span><span class="v">&rsaquo;</span></button>
       </div>
 
@@ -388,7 +388,7 @@
         <span>Zoom</span>
         <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="2" aria-label="Camera zoom">
       </div>
-      <div class="scan-hint" id="scanHint">Point at a <b>QR label</b> &mdash; it reads automatically</div>
+      <div class="scan-hint" id="scanHint">Point at a <b>QR label</b> - it reads automatically</div>
     </div>
   </div>
 </div>
@@ -513,10 +513,16 @@ async function doAuth(){
   if(authMode==="signup"&&pw.length<6){$("loginErr").textContent="Password must be at least 6 characters.";return;}
   $("authBtn").disabled=true;$("authBtn").textContent="Please wait…";
   let error;
-  if(authMode==="signin"){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
-  else{
-    const r=await supa.auth.signUp({email,password:pw});error=r.error;
-    if(!error&&!r.data.session){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
+  try{
+    if(authMode==="signin"){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
+    else{
+      const r=await supa.auth.signUp({email,password:pw});error=r.error;
+      if(!error&&!r.data.session){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
+    }
+  }catch(e){
+    /* A dropped connection can reject instead of resolving with {error} -- without
+       this the button would stay disabled/"Please wait..." forever. */
+    error={message:"Couldn't reach the server. Check your connection and try again."};
   }
   $("authBtn").disabled=false;setAuthMode(authMode);
   if(error)$("loginErr").textContent=error.message;
@@ -617,18 +623,23 @@ const PART_COLS="serial,title,pdf_url,result,specs";
 const tidy=s=>(s||"").replace(/[^A-Za-z0-9]+/g,"").toUpperCase();
 async function findPartRow(serial){
   /* The database does the matching now, so the catalogue cannot be listed by
-     anyone holding the app's public key — a known serial is the only way in. */
+     anyone holding the app's public key - a known serial is the only way in. */
   const {data,error}=await supa.rpc("lookup_report",{scanned:serial});
   if(!error)return (data&&data.length)?data[0]:null;
   return matchLocally(serial);
 }
 /* Used only until northcomm-setup.sql has been run on the database. */
 async function matchLocally(serial){
+  /* supabase-js normalises a dropped connection into {data:null,error} rather than
+     throwing, so an `error` here means "couldn't reach the database", never "no
+     match" -- maybeSingle()/select() report zero rows as null/[] with no error. */
   const want=tidy(serial);
-  const {data:exactRow}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
+  const {data:exactRow,error:e1}=await supa.from("northcomm_parts").select(PART_COLS).eq("serial",serial).maybeSingle();
+  if(e1)throw new Error("offline");
   if(exactRow)return exactRow;
   if(want.length<6)return null;
   const all=await supa.from("northcomm_parts").select(PART_COLS);
+  if(all&&all.error)throw new Error("offline");
   const rows=(all&&all.data)||[];
   const exact=rows.filter(r=>tidy(r.serial)===want);
   if(exact.length===1)return exact[0];
@@ -637,21 +648,21 @@ async function matchLocally(serial){
   return inside.length?inside[0]:null;
 }
 async function lookupPart(serial){
-  try{
-    const data=await findPartRow(serial);
-    if(!data)return null;
-    const specs=Array.isArray(data.specs)?data.specs:[];
-    const pdfUrl=data.pdf_url?(/^https?:/i.test(data.pdf_url)?data.pdf_url:SUPA_URL+"/storage/v1/object/public/reports/"+data.pdf_url):null;
-    return {part:data.serial,serial:data.serial,title:data.title||data.serial,
-      file:data.serial+".pdf",pdfUrl:pdfUrl,
-      tags:[data.result||"On file","Test report"].filter(Boolean),
-      desc:"Factory test report on file for serial "+data.serial+".",specs};
-  }catch(e){return null;}
+  /* Let a genuine network/Supabase failure propagate -- openResult tells the two
+     cases apart so "offline" is never shown to the user as "no report on file". */
+  const data=await findPartRow(serial);
+  if(!data)return null;
+  const specs=Array.isArray(data.specs)?data.specs:[];
+  const pdfUrl=data.pdf_url?(/^https?:/i.test(data.pdf_url)?data.pdf_url:SUPA_URL+"/storage/v1/object/public/reports/"+data.pdf_url):null;
+  return {part:data.serial,serial:data.serial,title:data.title||data.serial,
+    file:data.serial+".pdf",pdfUrl:pdfUrl,
+    tags:[data.result||"On file","Test report"].filter(Boolean),
+    desc:"Factory test report on file for serial "+data.serial+".",specs};
 }
 async function openResult(code){
   stopScan();
   code=(code||"").trim();
-  /* A label may encode a link carrying the serial — use the serial, not the link. */
+  /* A label may encode a link carrying the serial - use the serial, not the link. */
   if(/^https?:\/\//i.test(code)){
     try{
       const u=new URL(code);
@@ -665,7 +676,24 @@ async function openResult(code){
   if(!rec){
     box.innerHTML='<div class="msg"><div class="big">Looking up '+key.replace(/</g,"&lt;")+'&hellip;</div><div class="sub">Checking the parts database.</div></div>';
     show("result");
-    rec=await lookupPart(key);
+    try{
+      rec=await lookupPart(key);
+    }catch(e){
+      /* A real connection failure is not the same as "no report on file" --
+         conflating the two would tell an offline user their part doesn't exist. */
+      box.innerHTML=`
+        <div class="pad" style="padding-bottom:0"><button class="btn btn-ghost" style="padding:11px;min-height:44px" onclick="goHome()">&larr; Home</button></div>
+        <div class="msg">
+          <div class="big">Couldn't reach the parts database</div>
+          <div class="sub">Check your connection and try again.</div>
+          <button class="retrybtn" id="retryLookupBtn">Retry</button>
+          <div style="height:12px"></div>
+          <button class="btn btn-ghost" onclick="startScan()">Scan again</button>
+        </div>`;
+      show("result");
+      const rb=$("retryLookupBtn");if(rb)rb.addEventListener("click",()=>openResult(key));
+      return;
+    }
   }
   if(rec){
     saveScan(rec.part,rec.title);
@@ -739,13 +767,13 @@ async function startScanNow(){
   show("home");$("scanner").classList.remove("hidden");
   $("torchBtn").classList.add("hidden");torchOn=false;$("torchBtn").classList.remove("on");
   try{
-    /* Ask for the sharpest feed the phone will give — small labels need pixels. */
+    /* Ask for the sharpest feed the phone will give - small labels need pixels. */
     stream=await navigator.mediaDevices.getUserMedia({video:{
       facingMode:{ideal:"environment"},
       width:{ideal:2560},height:{ideal:1440}
     }});
     const v=$("video");v.srcObject=stream;await v.play();
-    $("scanHint").innerHTML='Point at a <b>QR label</b> &mdash; it reads automatically';
+    $("scanHint").innerHTML='Point at a <b>QR label</b> - it reads automatically';
     track=stream.getVideoTracks()[0];
     const caps=track.getCapabilities?track.getCapabilities():{};
     /* keep small labels sharp up close */
@@ -762,8 +790,8 @@ async function startScanNow(){
     scanning=true;frameNo=0;tick();
   }catch(e){
     $("scanHint").innerHTML=IS_NATIVE
-      ? '<b>Camera access is off.</b> Open Settings &rsaquo; ScanSpec and turn on Camera, then retry &mdash; or enter a part number by hand.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>'
-      : '<b>Camera blocked.</b> Allow camera access in your browser, then retry &mdash; or use a sample code.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
+      ? '<b>Camera access is off.</b> Open Settings &rsaquo; ScanSpec and turn on Camera, then retry - or enter a part number by hand.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>'
+      : '<b>Camera blocked.</b> Allow camera access in your browser, then retry - or use a sample code.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
   }
 }
 function setupZoom(range,current){
