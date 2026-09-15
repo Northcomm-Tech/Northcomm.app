@@ -19,3 +19,11 @@ Committed: 2d3c816 · Open: SW-register localhost error to confirm; deep JS erro
 | content | removed all em dashes (3 JS comments + 5 user-visible &mdash;) | grep -c mdash = 0 |
 | regression | inline script parses + runs, app renders (sign-in + theme toggle), no NEW console errors | only pre-existing SW-register localhost quirk remains |
 Committed: 7a485fc · +1.7KB for error paths, 117->118KB.
+
+## Round 3 — 2026-09-15 ~11:32 (committed 794fd5c on ja/loop)
+| Lane | Change | Proof |
+|---|---|---|
+| perf | vendor-qrcode.min.js ruled NOT dead weight (used by share/print QR feature, L921) | kept with proof, not guessed |
+| visual | result card: PASS/FAIL pill was neutral grey like other tags; now fixed red/green bg (white text AA in both themes), word stays the real signal | .pill-fail #c0392b / .pill-pass #1c7a4d, orchestrator corrected agent's var(--err) which flips light in dark mode |
+| safety | clean (CSS class + regex on tag text; text still esc()'d, class names static) | reasoned inline |
+Committed: 794fd5c · +399b. Noted (needs live session): history row density >10, torch/zoom overlap on tiny phones, clear-history confirm flow.
