@@ -1,0 +1,4 @@
+# loop-log.md — northcomm / artifact
+| round | capture | mechanical gate | judge A | judge C | better? | fix scope | note |
+|---|---|---|---|---|---|---|---|
+| 2 | .visual/round-2/screens (light) + screens-dark | overall FAIL (capture-invalid only; lint 0 FAIL/1 WARN, receipts pass, blank-bands pass, console clean) | n/a (builder round, no judge pass run) | n/a | yes vs pre-restyle app | index.html, privacy.html, support.html, fonts/, sw.js, scripts/copy-web.js | Restyled the real app to tile-B "field instrument" + paper-A + pass-C. Remaining FAIL is `desktop-nojs.png` byte-identical to `desktop.png` in visual_gate's screenshot self-check -- the login view is static markup that paints the same with JS disabled, which predates this round and can't be changed without touching auth/view JS (out of restyle scope). support.html gets a `uniform-radius` WARN (single 8px radius on its one `.card`) -- left as-is since it's a plain content page, not the app's radius scale. |
