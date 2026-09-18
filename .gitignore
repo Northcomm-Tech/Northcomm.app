@@ -25,3 +25,8 @@ build/
 # macOS
 .DS_Store
 .ja/
+
+# /visual loop working files (kept local)
+.visual/
+design-brief.md
+loop-log.md
