@@ -31,15 +31,15 @@ Whether you are on a tower, in a data center, or on an install site, the informa
 
 KEY FEATURES
 
-- Scan a QR label and open the matching factory test report and spec sheet, no account needed
+- Scan a QR label and open the matching factory test report and spec sheet
 - Fast camera-based lookup designed for field and install staff
-- Optional sign-in to keep your scan history synced across your devices
+- Sign in once to save your scan history across your devices
 - Clean, no-clutter interface
 - Free to use, with no ads and no third-party tracking
 
-YOUR ACCOUNT (OPTIONAL)
+YOUR ACCOUNT
 
-No account is needed to scan a label, look up a part number, or open a report. An account is only there if you want your recent-scans history to follow you across devices. Sign in from Settings or from the invite under Recent scans, and delete your account from inside the app at any time.
+ScanSpec asks you to sign in with your email address the first time you open it. That account keeps your scan history saved and synced across your devices. It is free, and you can delete your account from inside the app at any time at any time.
 
 PRIVACY
 
@@ -105,19 +105,19 @@ Result: **4+**
 Declare exactly the two data types below. Everything else: **not collected**.
 
 ### 1. Contact Info > Email Address
-- Collected: **Yes, only if the user chooses to create an account**
+- Collected: **Yes**
 - Linked to the user's identity: **Yes** (it is the account identifier)
 - Used for tracking: **No**
 - Purposes: **App Functionality** only
-  (used to create and access the optional account; not used for advertising, analytics,
+  (used to create and access the required account; not used for advertising, analytics,
   or product personalization)
 
 ### 2. Usage Data > Product Interaction  (the user's scan history)
-- Collected: **Yes** (kept on-device only when signed out; synced to the account when signed in)
-- Linked to the user's identity: **Yes, when the user is signed in** (device-local and unlinked otherwise)
+- Collected: **Yes**
+- Linked to the user's identity: **Yes** (tied to the account when signed in)
 - Used for tracking: **No**
 - Purposes: **App Functionality** only
-  (saved so scan history syncs across the user's devices, for users who sign in)
+  (saved so scan history syncs across the user's devices)
 
 Notes for whoever fills the form:
 - Scan history is declared as **Usage Data > Product Interaction**, matching
@@ -127,35 +127,29 @@ Notes for whoever fills the form:
   whole app. There is no third-party advertising and no analytics SDK.
 - Data is NOT used for Third-Party Advertising, Developer's Advertising, Analytics, or
   Product Personalization. App Functionality is the only purpose for both types.
-- No account is required to use the app (App Review Guideline 5.1.1(v)). Both data types
-  above are only collected from users who choose to create an account; a signed-out user's
-  recent scans stay in local device storage and are never sent to the server.
+- An account is required to use the app, so both data types are collected from every user.
 
 ---
 
 ## What to Prepare Before Submitting
 
-1. **Reviewer demo credentials (ACTION NEEDED - Jack must create this).**
-   No account is required to use the app -- scanning, manual entry, lookup and opening a
-   report all work signed out. A demo account is still supplied so the reviewer can also
-   exercise the account-bound history/sync/delete features. Create a dedicated test account
-   (for example appreview@northcommtechnologies.com) with a known password and enter it in
-   App Store Connect under App Review Information > Sign-In Information (not "Sign-In
-   Required" -- the app has no such requirement). Do NOT reuse a real customer account.
-   Confirm the account can sign in on the live app before submitting.
+1. **Reviewer sign-in demo credentials (ACTION NEEDED - Jack must create this).**
+   The app has required Supabase email/password sign-in.
+   Apple reviewers will test it. Create a dedicated test account (for example
+   appreview@northcommtechnologies.com) with a known password and enter it in App Store
+   Connect under App Review Information > Sign-In Required > demo account. Do NOT reuse a
+   real customer account. Confirm the account can sign in on the live app before
+   submitting.
 
 2. **App Review notes (paste into the Notes field):**
    "Northcomm ScanSpec is a free utility for North Comm Technologies, a manufacturer of
    RF cable assemblies. The app uses the device camera to scan a QR label printed on an
    assembly. The QR code contains that unit's serial number. The app reads the serial and
-   fetches that assembly's factory test report / spec sheet PDF. No account is required for
-   any of this. To test without a physical label, tap 'Enter a part number manually' on the
-   Home screen and type NC-121484, or open the live web version at
-   https://northcomm-tech.github.io/Northcomm.app/. Signing in is optional and only keeps
-   scan history in sync across devices; demo credentials are provided in App Review
-   Information for testing that path, and account deletion is available in-app under
-   Settings (requires northcomm-setup.sql to have been run). No ads, no analytics, no
-   third-party tracking."
+   fetches that assembly's factory test report / spec sheet PDF. An account is required; the demo credentials in App Review Information sign the reviewer in. To test
+   the scanner without a physical label, use the sample QR shown in one of the
+   screenshots (or open the live web version at
+   https://northcomm-tech.github.io/Northcomm.app/). Account deletion is available in-app (requires northcomm-setup.sql to have been run).
+   No ads, no analytics, no third-party tracking."
 
 3. **A scannable sample QR** for the reviewer (a serial that resolves to a real PDF).
    Include it as a screenshot and/or reference it in the review notes so the reviewer can

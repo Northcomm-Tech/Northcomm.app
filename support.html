@@ -2,27 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Support - Northcomm ScanSpec</title>
+<title>Support — Northcomm ScanSpec</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Light mode only (Jack, 2026-09-18): no dark theme. -->
-<meta name="color-scheme" content="light">
-<link rel="preload" href="fonts/ibm-plex-sans-500.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face{font-family:'IBM Plex Sans';font-weight:500;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-500.woff2') format('woff2')}
-  @font-face{font-family:'IBM Plex Sans';font-weight:600;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-600.woff2') format('woff2')}
-  @font-face{font-family:'IBM Plex Sans Condensed';font-weight:700;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-condensed-700.woff2') format('woff2')}
-  :root{color-scheme:light;--ink:#1c1c1a;--signal-press:#d92f00;--paper:#fbfaf7;--text:#1c1c1a;--steel:#5f5e5a;--line:#d8d6d0;--mist:#f0ede4;
-    --sans:'IBM Plex Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--cond:'IBM Plex Sans Condensed',var(--sans)}
+  :root{--ink:#353535;--signal:#FF3800;--paper:#fff;--text:#2b2b2b;--steel:#8a8a88;--line:#e4e2df;--mist:#f4f4f4}
+  @media (prefers-color-scheme:dark){:root{--paper:#1b1c1c;--text:#eaeae8;--ink:#e9e8e7;--line:#343535;--steel:#9a9a98;--mist:#242525}}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--sans);font-weight:500;background:var(--paper);color:var(--text);line-height:1.65}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--text);line-height:1.65}
   .wrap{max-width:680px;margin:0 auto;padding:40px 22px 60px}
-  h1{font-family:var(--cond);font-weight:700;font-size:28px;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+  h1{font-size:26px;color:var(--ink);margin-bottom:6px}
   .sub{color:var(--steel);font-size:13px;margin-bottom:30px}
-  h2{font-family:var(--cond);font-weight:700;font-size:18px;text-transform:uppercase;color:var(--ink);margin:30px 0 10px}
+  h2{font-size:16px;color:var(--ink);margin:30px 0 10px}
   p,li{font-size:15px;margin-bottom:12px}
   ul,ol{padding-left:22px}
-  a{color:var(--signal-press)}
-  .card{background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:16px 0}
+  a{color:var(--signal)}
+  .card{background:var(--mist);border-radius:12px;padding:16px 18px;margin:16px 0}
   .back{display:inline-block;margin-top:34px;font-size:14px}
 </style>
 </head>
@@ -54,12 +48,12 @@
   <h2>Getting the app</h2>
   <p>Northcomm ScanSpec runs in any phone browser at <a href="https://northcomm-tech.github.io/Northcomm.app/">northcomm-tech.github.io/Northcomm.app</a>. On iPhone you can keep it one tap away with Share then Add to Home Screen.</p>
 
-  <h2>Accounts (optional)</h2>
-  <p>Northcomm ScanSpec does not require an account. Scanning a label, entering a part number by hand, and opening a report all work without signing in. An account is only there if you want your recent scans to follow you across every device: sign in from <strong>Settings</strong> or from the invite under Recent scans, with your email address and password, or tap <strong>Create an account</strong>. To remove it, open <strong>Settings</strong> from the top of the screen and choose <strong>Delete my account</strong>. That removes your sign-in and permanently unlinks your scan history from you. Test reports for Northcomm assemblies stay on file, because they belong to the hardware rather than to your account.</p>
+  <h2>Accounts</h2>
+  <p>Northcomm ScanSpec requires an account. Sign in with your email address and password, or tap <strong>Create an account</strong> on the first screen. Your account keeps your recent scans in sync across your devices. To remove it, open <strong>Settings</strong> from the top of the screen and choose <strong>Delete my account</strong>. That removes your sign-in and permanently unlinks your scan history from you. Test reports for Northcomm assemblies stay on file, because they belong to the hardware rather than to your account.</p>
 
   <p><a href="privacy.html">Privacy policy</a></p>
 
-  <a class="back" href="./">Back to Northcomm ScanSpec</a>
+  <a class="back" href="./">&larr; Back to Northcomm ScanSpec</a>
 </div>
 </body>
 </html>

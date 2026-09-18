@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-5";
+const CACHE = "northcomm-specs-7";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,11 +10,7 @@ const ASSETS = [
   "./icon-512.png",
   "./jsQR.min.js",
   "./vendor-supabase.min.js",
-  "./vendor-qrcode.min.js",
-  "./fonts/ibm-plex-sans-500.woff2",
-  "./fonts/ibm-plex-sans-600.woff2",
-  "./fonts/ibm-plex-sans-condensed-700.woff2",
-  "./fonts/ibm-plex-mono-600.woff2"
+  "./vendor-qrcode.min.js"
 ];
 
 self.addEventListener("install", e => {
@@ -48,12 +44,7 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  // never cache cross-origin API calls (Supabase spec data must stay fresh)
-  if (new URL(req.url).origin !== self.location.origin) {
-    e.respondWith(fetch(req));
-    return;
-  }
-  // cache-first for same-origin static assets (icons, libs)
+  // cache-first for static assets (icons, libs)
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();

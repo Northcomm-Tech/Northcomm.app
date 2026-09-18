@@ -1,6 +1,11 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "scanspec-ja", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "4751"], "port": 4751 }
+    {
+      "name": "scanspec",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8791"],
+      "port": 8791
+    }
   ]
 }

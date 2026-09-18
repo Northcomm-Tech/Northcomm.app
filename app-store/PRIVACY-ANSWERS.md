@@ -14,9 +14,8 @@ libraries are bundled inside the app, not fetched from a CDN).
 
 **YES.**
 
-Do not answer "No". No account is required to use the app, but a user who chooses to create
-one gives the app an email address, and their scan history then leaves the device to sync.
-Answering "No" here is a false statement to Apple.
+Do not answer "No". The app stores an email address for the required account and keeps a scan
+history, and both leave the device. Answering "No" here is a false statement to Apple.
 
 ---
 
@@ -33,10 +32,8 @@ Select exactly these two. Leave every other category unchecked.
 | Linked to the user's identity? | **Yes** |
 | Purpose | **App Functionality** only |
 
-Why: an account is optional. If a user creates one, it is used to sign them in and sync
-scan history across devices. It is not used for marketing, advertising or analytics, and it
-never gates any feature -- scanning, manual entry, lookup and opening a report all work
-without one.
+Why: an account is created with an email address, and that account is what gates the app
+and syncs scan history across devices. It is not used for marketing, advertising or analytics.
 
 ### Usage Data > Product Interaction
 
@@ -44,14 +41,13 @@ without one.
 |---|---|
 | Collected? | Yes |
 | Used for tracking? | **No** |
-| Linked to the user's identity? | **Yes, only if the user is signed in** |
+| Linked to the user's identity? | **Yes** |
 | Purpose | **App Functionality** only |
 
 Why: when a signed-in user scans a label, the serial, the title and a timestamp are saved to
 their own scan history row so they can see what they looked up before. That is product
 interaction data, it is tied to their account, and it exists purely to power the history
-feature. Signed out, the same recent-scans list is kept in local device storage only and is
-never sent to the server.
+feature.
 
 ---
 
@@ -111,17 +107,14 @@ an automatic rejection.
 
 ---
 
-## App Review Information: no account required, demo account still supplied
+## App Review Information: a demo account is REQUIRED
 
-No account is required to use the app (App Review Guideline 5.1.1(v)): scanning, manual
-entry, lookup and opening a report all work signed out. A demo account is still supplied so
-the reviewer can also exercise the optional history/sync/delete features.
+The app shows a sign-in screen first and there is no anonymous path into it, so Apple
+Guideline 2.1 requires you to hand the reviewer working credentials. Without them the
+review is rejected in a day with "we were unable to sign in".
 
-In App Store Connect > App Review Information, use **Sign-In Information** (not "Sign-In
-Required" -- the app has no such requirement) and enter a real account created in
-Northcomm's Supabase, kept alive for as long as the app is on sale. Give the reviewer the
-sample serial **NC-121484** to type under "Enter a part number manually" on Home, so they
-can see a real report without any physical label or sign-in at all.
+In App Store Connect > App Review Information, tick **Sign-in required** and enter a real
+account created in Northcomm's Supabase, kept alive for as long as the app is on sale.
 
 | Field | Value |
 |---|---|
@@ -134,16 +127,13 @@ can see a real report without any physical label or sign-in at all.
 > manufacturer of the RF cable assemblies it reads. Point the camera at the QR label printed
 > on an assembly and the app opens that unit's factory test report.
 >
-> No sign-in is needed to use the app. To test the lookup without a physical label, tap
-> "Enter a part number manually" on the Home screen and type NC-121484, then tap Go -- this
-> pulls up that assembly's real factory test report signed out. "Browse reports on file" also
-> works signed out and lists every report in the catalogue.
+> Sign in with the demo account provided above. To test without physical hardware, tap
+> "Browse reports on file" on the home screen to see the catalogue and open any report
+> directly. To scan a physical label, sign in on a second device, open "Browse reports on file", and point
+> this app's scanner at the QR code shown there.
 >
-> Signing in is optional and only syncs scan history across devices. Use the demo account
-> above to test that path from Settings > Sign in or create an account. The account can be
-> deleted from Settings > Delete my account.
+> The account is used only to sync scan history. It can be deleted from
+> Settings > Delete my account.
 
-Before submitting, confirm on a real device, signed out, that Home shows immediately (no
-login wall), that manual entry of NC-121484 opens a real report, and that Browse reports on
-file lists the catalogue. Then sign in with the demo account and confirm history sync and
-Settings > Delete my account still work.
+Before submitting, sign in as the demo account on a real device and confirm that Browse
+loads and a report opens. A reviewer who gets stuck on the first screen will reject the app.

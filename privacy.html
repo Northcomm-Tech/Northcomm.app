@@ -2,26 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Privacy Policy - Northcomm ScanSpec</title>
+<title>Privacy Policy — Northcomm ScanSpec</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Light mode only (Jack, 2026-09-18): no dark theme. -->
-<meta name="color-scheme" content="light">
-<link rel="preload" href="fonts/ibm-plex-sans-500.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face{font-family:'IBM Plex Sans';font-weight:500;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-500.woff2') format('woff2')}
-  @font-face{font-family:'IBM Plex Sans';font-weight:600;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-600.woff2') format('woff2')}
-  @font-face{font-family:'IBM Plex Sans Condensed';font-weight:700;font-style:normal;font-display:swap;src:url('fonts/ibm-plex-sans-condensed-700.woff2') format('woff2')}
-  :root{color-scheme:light;--ink:#1c1c1a;--signal-press:#d92f00;--paper:#fbfaf7;--text:#1c1c1a;--steel:#5f5e5a;--line:#d8d6d0;
-    --sans:'IBM Plex Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--cond:'IBM Plex Sans Condensed',var(--sans)}
+  :root{--ink:#353535;--signal:#FF3800;--paper:#fff;--text:#2b2b2b;--steel:#8a8a88;--line:#e4e2df}
+  @media (prefers-color-scheme:dark){:root{--paper:#1b1c1c;--text:#eaeae8;--ink:#e9e8e7;--line:#343535;--steel:#9a9a98}}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--sans);font-weight:500;background:var(--paper);color:var(--text);line-height:1.65}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--text);line-height:1.65}
   .wrap{max-width:680px;margin:0 auto;padding:40px 22px 60px}
-  h1{font-family:var(--cond);font-weight:700;font-size:28px;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+  h1{font-size:26px;color:var(--ink);margin-bottom:6px}
   .sub{color:var(--steel);font-size:13px;margin-bottom:30px}
-  h2{font-family:var(--cond);font-weight:700;font-size:18px;text-transform:uppercase;color:var(--ink);margin:30px 0 10px}
+  h2{font-size:16px;color:var(--ink);margin:30px 0 10px}
   p,li{font-size:15px;margin-bottom:12px}
   ul{padding-left:22px}
-  a{color:var(--signal-press)}
+  a{color:var(--signal)}
   .back{display:inline-block;margin-top:34px;font-size:14px}
 </style>
 </head>
@@ -33,10 +27,9 @@
   <p>Northcomm ScanSpec is an internal tool published by North Comm Technologies. It lets staff scan the QR label on a cable assembly and pull up that assembly's factory test report.</p>
 
   <h2>What we collect</h2>
-  <p>No account is required to use the app. Scanning a label, entering a part number by hand, and opening a report all work without signing in; your recent scans are then kept only in local storage on your own phone.</p>
   <ul>
-    <li><strong>Your email address and password (only if you create an account).</strong> An account is optional. If you choose to create one, your email address is used only to sign you in, and your password is stored only as a secure one-way hash that nobody at North Comm can read.</li>
-    <li><strong>Your scan history</strong> - the serial numbers you have looked up and when. Signed out, this stays in local storage on your device. If you sign in, it also syncs to your account so it follows you across devices.</li>
+    <li><strong>Your email address and password.</strong> An account is required to use the app. Your email address is used only to sign you in, and your password is stored only as a secure one-way hash that nobody at North Comm can read.</li>
+    <li><strong>Your scan history</strong> — the serial numbers you have looked up and when. This lets the app show your recent scans across your devices.</li>
   </ul>
   <p>That is the entire list. We do not collect your name, location, contacts, advertising identifiers, or usage analytics, and we do not track you across other apps or websites.</p>
 
@@ -44,7 +37,7 @@
   <p>The app uses your camera only while the scanner screen is open, and only to read QR codes. Images from the camera are processed on your device as the scanner looks for a code. No photo or video is recorded, stored, or transmitted anywhere.</p>
 
   <h2>How your data is stored</h2>
-  <p>Signed-out scan history stays on your device only. If you sign in, account details and scan history are held in North Comm Technologies' own database, hosted by Supabase. Access rules restrict each account to reading only its own scan history. Test report documents themselves contain no personal information.</p>
+  <p>Account details and scan history are held in North Comm Technologies' own database, hosted by Supabase. Access rules restrict each account to reading only its own scan history. Test report documents themselves contain no personal information.</p>
 
   <h2>Who we share it with</h2>
   <p>We do not sell, rent, or trade your information, and we do not use advertising networks, analytics services, or data brokers. The only third party that handles your data is Supabase, which hosts our database on our behalf and processes it solely under our instructions. Your data is otherwise disclosed only if we are required to do so by law.</p>
@@ -64,7 +57,7 @@
   <h2>Contact</h2>
   <p>Questions about privacy, or requests to access or delete your data: <a href="mailto:support@northcomm.app">support@northcomm.app</a></p>
 
-  <a class="back" href="./">Back to Northcomm ScanSpec</a>
+  <a class="back" href="./">&larr; Back to Northcomm ScanSpec</a>
 </div>
 </body>
 </html>
