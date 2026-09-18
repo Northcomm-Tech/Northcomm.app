@@ -29,7 +29,7 @@ pinned tokens:
 - Type: IBM Plex Sans Condensed 700 (screen titles, button labels), IBM Plex Mono 600 (serials, 28-40px), IBM Plex Sans 500/600 (body, min 15px). Self-hosted woff2 in fonts/, no CDN.
 - Radius scale: 0 / 3px / 8px (inputs). Borders 2px ink on primary cards, 1px line on secondary. No shadows.
 - Spacing base 8: 8/16/24/40.
-- Refusals: no eyebrow microlabel above the home title; no arrows on links; PASS is never orange (orange means action); no status/online indicator; no em dashes; real Northcomm logo in the slab, never an N square; top bar holds logo + settings gear only.
+- Refusals: no eyebrow microlabel above the home title; no arrows on links; PASS is never orange (orange means action); no status/online indicator; no em dashes; real Northcomm logo in the slab, never an N square; top bar holds logo + settings gear only. Light mode only (Jack, 2026-09-18). No dark theme, no theme toggle.
 
 ## Borrowed vs original
 borrow:
