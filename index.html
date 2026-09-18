@@ -221,8 +221,8 @@
   .login .err{font-family:var(--sans);font-size:13px;color:var(--err);text-align:left;min-height:16px}
   /* Closes the void under the form with the same two links the signed-in
      footer already has -- no new feature, just anchored near the bottom. */
-  .login .loginfoot{flex:1;display:flex;flex-direction:column;justify-content:flex-end;
-    border-top:1px solid var(--line);margin-top:22px;padding-top:14px}
+  .login .loginfoot{flex:1;display:flex;flex-direction:column;justify-content:flex-end;margin-top:22px}
+  .login .loginfoot .footlinks{border-top:1px solid var(--line);padding-top:6px}
   .login .swap{text-align:left;font-family:var(--sans);font-size:13.5px;color:var(--steel)}
   .login .swap button{background:none;border:none;color:var(--signal-press);font-family:var(--sans);font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;padding:12px 8px;margin-left:-8px;min-height:44px}
   .acctbtn{width:44px;height:44px;border:none;background:transparent;color:var(--ink);cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center}
@@ -257,13 +257,14 @@
   .setnote{padding:0 4px;margin:-8px 0 18px;font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--steel)}
 
   /* Camera explainer, shown before the OS permission prompt */
-  .camwrap{padding:24px 22px calc(30px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;text-align:center}
-  .camwrap .camicon{width:64px;height:64px;margin:8px auto 18px;color:var(--signal-press)}
+  .camwrap{padding:24px 16px calc(30px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;text-align:left}
+  .camwrap .camicon{width:40px;height:40px;margin:8px 0 14px;color:var(--signal-press);display:block}
   .camwrap .btn{width:100%}
-  .camwrap h2{margin:0 0 10px;font-family:var(--cond);font-weight:700;font-size:24px;text-transform:uppercase;color:var(--ink)}
+  .camwrap h2{margin:0 0 10px;font-family:var(--cond);font-weight:700;font-size:28px;line-height:1.05;text-transform:uppercase;color:var(--ink)}
   .camwrap p{margin:0 0 16px;font-family:var(--sans);font-size:15px;line-height:1.55;color:var(--steel)}
-  .camlist{text-align:left;margin:0 0 22px;padding:0;list-style:none}
-  .camlist li{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;font-family:var(--sans);font-size:15px;line-height:1.5}
+  .camlist{text-align:left;margin:0 0 22px;padding:0;list-style:none;border:2px solid var(--ink);border-radius:3px;background:var(--card)}
+  .camlist li{display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border-top:1px solid var(--line);font-family:var(--sans);font-size:15px;line-height:1.5}
+  .camlist li:first-child{border-top:0}
   .camlist .tick{color:var(--signal-press);flex:0 0 auto;font-weight:700}
   /* The logo tile bakes in the slab color; it must not flip with the theme (pinned tokens set --err per-theme already). */
   .appmark{background:var(--slab)}
@@ -298,6 +299,8 @@
     .btn-primary:hover{background:var(--signal)}
   }
   .hidden{display:none!important}
+  .doc>h3:first-child{margin-top:0}
+  .filebadge+.doc{padding-top:14px}
 </style>
 
 <div class="app">
