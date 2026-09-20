@@ -1,4 +1,4 @@
-const CACHE = "northcomm-specs-7";
+const CACHE = "northcomm-specs-8";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,7 +10,11 @@ const ASSETS = [
   "./icon-512.png",
   "./jsQR.min.js",
   "./vendor-supabase.min.js",
-  "./vendor-qrcode.min.js"
+  "./vendor-qrcode.min.js",
+  "./fonts/inter-400.woff2",
+  "./fonts/inter-500.woff2",
+  "./fonts/inter-600.woff2",
+  "./fonts/inter-700.woff2"
 ];
 
 self.addEventListener("install", e => {

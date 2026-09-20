@@ -29,7 +29,7 @@ const FILES = [
 ];
 
 // Whole folders to bundle.
-const DIRS = ["pdfs"];
+const DIRS = ["pdfs", "fonts"];
 
 // Fresh www/ every run so it always mirrors source.
 fs.rmSync(www, { recursive: true, force: true });
