@@ -18,7 +18,7 @@
   @font-face{font-family:"Inter";src:url("fonts/inter-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
   :root{
     color-scheme:light;
-    --ink:#353535; --slab:#353535; --err:#c0392b; --signal:#d92f00; --signal-press:#b32700;
+    --ink:#353535; --slab:#353535; --err:#c0392b; --signal:#FF3800; --signal-press:#e03100; --signal-text:#c72c00;
     --paper:#ffffff; --mist:#f4f4f4; --line:#e4e2df; --steel:#6b6b69;
     --field:#202020; --text:#2b2b2b; --radius:14px;
     --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -104,7 +104,7 @@
   .sheet-head{background:var(--slab);color:#fff;padding:18px}
   .sheet-head .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
   .sheet-head h2{font-size:19px;font-weight:700;margin-top:7px;line-height:1.35}
-  .sheet-head .pn{color:var(--signal);font-size:13px;font-weight:600;margin-top:7px;font-variant-numeric:tabular-nums}
+  .sheet-head .pn{color:var(--signal-text);font-size:13px;font-weight:600;margin-top:7px;font-variant-numeric:tabular-nums}
   .accentbar{height:4px;background:var(--signal)}
   .doc{padding:20px 18px}
   .pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
@@ -144,7 +144,7 @@
   .qcard .qimg canvas,.qcard .qimg img{width:100%;height:100%}
   .qcard .qt{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
   .qcard .qs{font-size:12px;color:var(--steel);margin-top:6px;line-height:1.5}
-  .qcard .simbtn{margin-top:12px;font-size:12px;font-weight:600;color:var(--signal);background:none;border:1px solid var(--signal);border-radius:8px;padding:11px 12px;cursor:pointer;font-family:inherit}
+  .qcard .simbtn{margin-top:12px;font-size:12px;font-weight:600;color:var(--signal-text);background:none;border:1px solid var(--signal);border-radius:8px;padding:11px 12px;cursor:pointer;font-family:inherit}
 
   /* manual entry */
   .manual{margin:2px 18px 0;display:flex;gap:8px}
@@ -177,7 +177,7 @@
   .login input:focus{outline:none;border-color:var(--signal)}
   .login .err{font-size:13px;color:var(--err);text-align:center;min-height:16px}
   .login .swap{text-align:center;font-size:13.5px;color:var(--steel)}
-  .login .swap button{background:none;border:none;color:var(--signal);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;padding:12px 8px;min-height:44px}
+  .login .swap button{background:none;border:none;color:var(--signal-text);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;padding:12px 8px;min-height:44px}
   .acctbtn{width:44px;height:44px;border:none;background:transparent;color:var(--ink);cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center}
   .acctbtn:hover{background:var(--mist)}
   .acctbtn svg{width:21px;height:21px}
@@ -267,6 +267,8 @@
   .doc .pillrow{display:none}
   .qcard{gap:8px}
   .bar{min-height:62px}
+  .btn-primary{font-size:19px;font-weight:700;letter-spacing:-.005em}
+  .btn-primary .sub,.btn-primary small{font-size:14px;font-weight:600}
 </style>
 
 <div class="app">
