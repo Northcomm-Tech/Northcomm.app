@@ -477,7 +477,7 @@
           <button type="button" class="pwtoggle" id="pwToggle" aria-label="Show password">Show</button>
         </div>
       </div>
-      <button type="button" class="forgot" id="forgotBtn">Forgot password?</button>
+      <button type="button" class="forgot hidden" id="forgotBtn">Forgot password?</button>
       <div class="err" id="loginErr" role="alert"></div>
       <button class="btn btn-primary" id="authBtn" aria-busy="false">Sign in</button>
       <div class="swap" id="loginSwap">New here? <button id="swapMode">Create an account</button></div>
@@ -725,7 +725,7 @@ function setAuthMode(m){
   $("password").setAttribute("autocomplete",m==="signin"?"current-password":"new-password");
   $("emailField").classList.toggle("hidden",m==="newpw");
   $("pwField").classList.toggle("hidden",m==="reset");
-  $("forgotBtn").classList.toggle("hidden",m!=="signin");
+  $("forgotBtn").classList.toggle("hidden",m!=="signin"||!RESET_ENABLED);
   $("loginErr").classList.remove("ok");
   $("loginSwap").classList.toggle("hidden",m==="newpw");
   $("loginSwap").innerHTML=m==="signup"?'Have an account? <button id="swapMode">Sign in</button>'
@@ -738,6 +738,9 @@ function setAuthMode(m){
 /* Reset links always land on the hosted web app, so they work from email on any
    device; after saving a new password the person signs in in the app as normal. */
 const RESET_URL="https://northcomm-tech.github.io/Northcomm.app/";
+/* Off until Northcomm's Supabase has its own email sender (the built-in mailer only
+   reaches project team members) and RESET_URL is in Auth > Redirect URLs. */
+var RESET_ENABLED=false;
 async function doAuth(){
   const email=$("email").value.trim(),pw=$("password").value;
   $("loginErr").textContent="";$("loginErr").classList.remove("ok");
