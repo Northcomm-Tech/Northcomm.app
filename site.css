@@ -1,0 +1,132 @@
+/* Shared look for every page, mirrored from the Contact page on northcommtechnologies.com:
+   Montserrat, white header + orange info bar, dotted texture on the left, boxed content
+   (1px border + soft shadow, square corners), uppercase orange titles, dark grey footer.
+   Light mode only. */
+@font-face{font-family:"Montserrat";src:url("fonts/montserrat-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Montserrat";src:url("fonts/montserrat-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Montserrat";src:url("fonts/montserrat-600.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Montserrat";src:url("fonts/montserrat-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
+:root{
+  /* brand: grey #636464 (99,100,100), orange #ef4a25 (239,74,37).
+     The main site uses #ff3800 for its page titles and the info bar, so those match it. */
+  --grey:#636464; --orange:#ef4a25; --orange-hover:#d63c19; --title:#ff3800;
+  --ink:#353535; --sub:#636464; --faint:#636464;
+  --signal:#ef4a25; --signal-press:#ef4a25; --signal-hover:#d63c19;
+  --paper:#ffffff; --card:#f4f4f4; --card-soft:#f8f8f7; --line:#e0e0e0;
+  --footer:#353535;
+  --pass:#1c7a41; --pass-bg:#e9f6ee; --fail:#b3261e; --fail-bg:#fbebea;
+  --r-lg:0; --r-md:0; --r-sm:0; --r-pill:999px;
+  --shadow:4px 4px 8px rgba(0,0,0,.2);
+  --sans:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;display:flex;flex-direction:column;min-height:100vh}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px;width:100%}
+hr.hair{border:none;border-top:1px solid var(--line);margin:0}
+.hidden{display:none!important}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* ---- header: sized to match northcommtechnologies.com exactly (logo 190x40, 14px nav, 80px bar row) ---- */
+.topbar{background:#fff}
+.topbar .wrap{display:flex;align-items:center;gap:8px;height:81px}
+.brandLogo{display:flex;align-items:center;min-height:44px;text-decoration:none;flex-shrink:0;margin-right:12px}
+.brandLogo .logo{height:39.7px;width:auto;max-width:none;flex-shrink:0;aspect-ratio:1200/251;display:block}
+.topbar .spacer{flex:1}
+.navlink{position:relative;font-size:14px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(53,53,53,.6);text-decoration:none;white-space:nowrap;padding:0 20px;height:59px;display:inline-flex;align-items:center}
+.navlink:hover{color:var(--orange)}
+.navlink[aria-current="page"]{color:var(--orange)}
+.navlink[aria-current="page"]::after{content:"";position:absolute;left:20px;right:20px;bottom:10px;height:2px;background:var(--orange)}
+
+/* orange info bar under the header, same as the main site */
+.infobar{background:var(--title);color:#fff;font-size:16px;font-weight:700;line-height:22px}
+.infobar .wrap{display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap;padding:8px 15px}
+@media (min-width:1195px){ .infobar .wrap{padding-left:7.5px;padding-right:7.5px} }
+@media (min-width:750px) and (max-width:1194px){ .brandLogo .logo{height:34.4px} }
+.infobar a{color:#fff;text-decoration:none;white-space:pre}
+.infobar .ph{display:inline-block;vertical-align:-2px}
+.infobar a:hover{text-decoration:underline}
+.infobar svg{flex-shrink:0}
+
+/* phones: like the main site, a 65px header with a larger logo, and only phone + CAGE in the bar */
+@media (max-width:749px){
+  .topbar .wrap{height:65px;gap:0;padding-left:15px;padding-right:10px}
+  .brandLogo .logo{height:37px}
+  .navlink{font-size:12px;letter-spacing:.3px;padding:0 8px;height:48px}
+  .navlink[aria-current="page"]::after{left:8px;right:8px;bottom:8px}
+  .infobar .wrap{flex-wrap:nowrap}
+  .infobar .duns{display:none}
+}
+@media (max-width:360px){ .brandLogo .logo{height:34px} .navlink{font-size:11px;padding:0 6px} .infobar{font-size:15px} }
+@media (max-width:340px){ .brandLogo .logo{height:31px} .navlink{font-size:10.5px;padding:0 5px;letter-spacing:0} .topbar .wrap{padding-left:12px;padding-right:6px} .infobar{font-size:14px} }
+
+/* ---- page body: dotted texture down the left, as on the main site ---- */
+.pagebody{flex:1;background:#fff url("brand/bg-dots.png") repeat-y 0 50%;background-size:50% auto}
+
+/* page title, like CONTACT on the main site */
+.ptitle{font-size:36px;font-weight:700;line-height:1.375;text-transform:uppercase;color:var(--title);margin:0 0 22px}
+@media (max-width:600px){ .ptitle{font-size:26px} }
+
+/* section headings inside pages: uppercase orange */
+.shead{font-size:20px;font-weight:700;line-height:1.35;text-transform:uppercase;letter-spacing:.01em;color:var(--title);margin:30px 0 10px}
+.shead:first-child{margin-top:0}
+
+/* the boxed content block from the main site's Contact page */
+.box{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:40px;margin:0 0 20px}
+@media (max-width:600px){ .box{padding:22px 20px} }
+
+/* ---- buttons: square, uppercase, spaced, like the main site's SEND ---- */
+.btn{display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid transparent;border-radius:0;font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:15px 24px;cursor:pointer;text-decoration:none;transition:background .15s;min-height:48px}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange-hover)}
+.btn-quiet{background:var(--card);color:var(--ink)}
+.btn-quiet:hover{background:#e9e9e9}
+
+/* ---- text pages (support, privacy, 404) ---- */
+.page{padding-top:60px;padding-bottom:40px}
+@media (max-width:600px){ .page{padding-top:32px} }
+.page .sub{color:var(--sub);font-size:13.5px;margin:-12px 0 22px}
+.page p,.page li{font-size:16px;color:var(--ink);margin-bottom:12px;line-height:1.7}
+.page .box > :last-child{margin-bottom:0}
+.page ol,.page ul{padding-left:22px}
+.page a{color:var(--orange);font-weight:600;overflow-wrap:anywhere}
+.page .lead{font-size:16px;line-height:1.7}
+
+/* what's in a report (support page) */
+.reportExplain{display:grid;grid-template-columns:1fr;gap:clamp(28px,4vw,48px);align-items:start}
+.reportExplain > *,.reportPoints > *{min-width:0}
+@media (min-width:900px){ .reportExplain{grid-template-columns:minmax(0,320px) minmax(0,1fr)} }
+.sampleImg{background:var(--card);padding:16px}
+.sampleImg img{width:100%;height:auto;aspect-ratio:910/1127}
+.sampleImg .cap{font-size:12.5px;color:var(--sub);margin-top:12px;text-align:center}
+.reportExplain .shead{margin-top:0}
+.reportExplain .intro{font-size:16px;color:var(--ink);margin:0 0 20px;line-height:1.65}
+.reportPoints{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:560px){ .reportPoints{grid-template-columns:1fr 1fr} }
+.rpoint b{display:block;font-size:15.5px;font-weight:700;color:var(--ink)}
+.page .rpoint p{font-size:14.5px;color:var(--sub);margin:5px 0 0;line-height:1.6}
+
+/* questions */
+.faq{padding:0}
+details.q{border-bottom:1px solid var(--line)}
+details.q:last-child{border-bottom:none}
+details.q summary{list-style:none;cursor:pointer;padding:20px 40px;font-weight:600;color:var(--ink);font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary .plus{flex-shrink:0;width:24px;height:24px;background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:16px;line-height:1}
+details.q[open] summary .plus{background:var(--orange);color:#fff}
+details.q .a{padding:0 40px 22px;color:var(--ink);font-size:15.5px;line-height:1.7;max-width:70ch}
+@media (max-width:600px){ details.q summary{padding:18px 20px} details.q .a{padding:0 20px 20px} }
+
+/* ---- footer: dark grey with white text, as on the main site ---- */
+footer{background:var(--footer);color:#fff;padding:36px 0 40px}
+footer .fine{font-size:15px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 18px}
+footer .fineLinks{display:flex;flex-wrap:wrap;gap:4px 26px}
+footer .fine a{text-decoration:none;color:#fff;min-height:44px;display:inline-flex;align-items:center}
+footer .fine a:hover{color:var(--orange);text-decoration:underline}
+@media (max-width:520px){ footer .fine{flex-direction:column;align-items:flex-start;gap:8px} }
+
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }

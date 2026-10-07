@@ -26,10 +26,11 @@ const FILES = [
   "icon-512.png",
   "privacy.html",
   "support.html",
+  "site.css",
 ];
 
 // Whole folders to bundle.
-const DIRS = ["pdfs", "fonts"];
+const DIRS = ["pdfs", "fonts", "brand"];
 
 // Fresh www/ every run so it always mirrors source.
 fs.rmSync(www, { recursive: true, force: true });

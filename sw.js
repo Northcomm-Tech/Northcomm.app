@@ -1,9 +1,10 @@
-const CACHE = "northcomm-specs-9";
+const CACHE = "northcomm-specs-10";
 const ASSETS = [
   "./",
   "./index.html",
   "./privacy.html",
   "./support.html",
+  "./site.css",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",
@@ -11,10 +12,13 @@ const ASSETS = [
   "./jsQR.min.js",
   "./vendor-supabase.min.js",
   "./vendor-qrcode.min.js",
-  "./fonts/inter-400.woff2",
-  "./fonts/inter-500.woff2",
-  "./fonts/inter-600.woff2",
-  "./fonts/inter-700.woff2"
+  "./fonts/montserrat-400.woff2",
+  "./fonts/montserrat-500.woff2",
+  "./fonts/montserrat-600.woff2",
+  "./fonts/montserrat-700.woff2",
+  "./brand/northcomm-logo.webp",
+  "./brand/northcomm-logo.png",
+  "./brand/bg-dots.png"
 ];
 
 self.addEventListener("install", e => {
