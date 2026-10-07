@@ -436,6 +436,8 @@
   .login p.lede,.samples>p.lede{font-size:16px;color:var(--ink);line-height:1.7;text-align:left;margin:0 0 20px}
   .login .box p.lede{margin:0}
   .pill svg{width:14px;height:14px;flex-shrink:0}
+  .login .forgot{align-self:flex-start;background:none;border:none;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--orange);cursor:pointer;padding:0;min-height:44px;margin:-8px 0 -8px;text-decoration:underline}
+  .login .err.ok{color:var(--pass)}
   /* ================= /SITE THEME ================= */
 </style>
 
@@ -460,17 +462,22 @@
         <span>Sign in with Apple</span>
       </button>
       <div class="authdiv hidden" id="authDivider">or</div>
-      <div class="field">
+      <div class="field hidden" id="nameField">
+        <label for="fullName">Name</label>
+        <input id="fullName" type="text" autocomplete="name" autocapitalize="words" placeholder="Your full name">
+      </div>
+      <div class="field" id="emailField">
         <label for="email">Email</label>
         <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" autocapitalize="none">
       </div>
-      <div class="field">
+      <div class="field" id="pwField">
         <label for="password">Password</label>
         <div class="pwrow">
           <input id="password" type="password" autocomplete="current-password" placeholder="Password">
           <button type="button" class="pwtoggle" id="pwToggle" aria-label="Show password">Show</button>
         </div>
       </div>
+      <button type="button" class="forgot" id="forgotBtn">Forgot password?</button>
       <div class="err" id="loginErr" role="alert"></div>
       <button class="btn btn-primary" id="authBtn" aria-busy="false">Sign in</button>
       <div class="swap" id="loginSwap">New here? <button id="swapMode">Create an account</button></div>
@@ -538,6 +545,7 @@
       <h1 class="ptitle">My account</h1>
       <div class="setgroup">
         <h3>My account</h3>
+        <div class="setrow static"><span>Name</span><span class="v" id="setName">&mdash;</span></div>
         <div class="setrow static"><span>Signed in as</span><span class="v" id="setEmail">&mdash;</span></div>
         <button class="setrow" id="setSignOut"><span>Sign out</span><span class="v">&rsaquo;</span></button>
       </div>
@@ -696,6 +704,7 @@ function reflectAuth(){
     $("sampleBtn").classList.remove("hidden");$("settingsBtn").classList.remove("hidden");
     const em=(session.user&&session.user.email)||"Signed in";
     $("setEmail").textContent=em;
+    $("setName").textContent=(session.user&&session.user.user_metadata&&session.user.user_metadata.full_name)||"—";
     show("home");loadScans();
   }else{
     $("signOutBtn").classList.add("hidden");$("acctFoot").classList.add("hidden");
@@ -703,32 +712,71 @@ function reflectAuth(){
     show("login");
   }
 }
+const AUTH_TEXT={
+  signin:["Sign in","Sign in to save your scans across devices.","Sign in"],
+  signup:["Create account","Create an account to save your scans.","Create account"],
+  reset:["Reset password","Enter the email address on your account and we will send you a link to set a new password.","Send reset link"],
+  newpw:["Set a new password","Choose a new password for your account. It must be at least 6 characters.","Save password"]
+};
 function setAuthMode(m){
   authMode=m;
-  $("loginTitle").textContent=m==="signin"?"Sign in":"Create account";
-  $("loginSub").textContent=m==="signin"?"Sign in to save your scans across devices.":"Create an account to save your scans.";
-  $("authBtn").textContent=m==="signin"?"Sign in":"Create account";
+  const t=AUTH_TEXT[m];
+  $("loginTitle").textContent=t[0];$("loginSub").textContent=t[1];$("authBtn").textContent=t[2];
   $("password").setAttribute("autocomplete",m==="signin"?"current-password":"new-password");
-  $("loginSwap").innerHTML=m==="signin"?'New here? <button id="swapMode">Create an account</button>':'Have an account? <button id="swapMode">Sign in</button>';
+  $("emailField").classList.toggle("hidden",m==="newpw");
+  $("pwField").classList.toggle("hidden",m==="reset");
+  $("forgotBtn").classList.toggle("hidden",m!=="signin");
+  $("loginErr").classList.remove("ok");
+  $("loginSwap").classList.toggle("hidden",m==="newpw");
+  $("loginSwap").innerHTML=m==="signup"?'Have an account? <button id="swapMode">Sign in</button>'
+    :m==="reset"?'Remembered it? <button id="swapMode">Sign in</button>'
+    :'New here? <button id="swapMode">Create an account</button>';
   $("swapMode").onclick=()=>setAuthMode(m==="signin"?"signup":"signin");
+  $("nameField").classList.toggle("hidden",m!=="signup");
   $("loginErr").textContent="";
 }
+/* Reset links always land on the hosted web app, so they work from email on any
+   device; after saving a new password the person signs in in the app as normal. */
+const RESET_URL="https://northcomm-tech.github.io/Northcomm.app/";
 async function doAuth(){
   const email=$("email").value.trim(),pw=$("password").value;
-  $("loginErr").textContent="";
+  $("loginErr").textContent="";$("loginErr").classList.remove("ok");
+  if(authMode==="reset"){
+    if(!email){$("loginErr").textContent="Enter your email address.";return;}
+    $("authBtn").disabled=true;$("authBtn").textContent="Please wait…";
+    const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:RESET_URL});
+    $("authBtn").disabled=false;$("authBtn").textContent=AUTH_TEXT.reset[2];
+    if(error){$("loginErr").textContent=error.message;return;}
+    $("loginErr").classList.add("ok");
+    $("loginErr").textContent="If that email has an account, a reset link is on its way. Check your inbox.";
+    return;
+  }
+  if(authMode==="newpw"){
+    if(pw.length<6){$("loginErr").textContent="Password must be at least 6 characters.";return;}
+    $("authBtn").disabled=true;$("authBtn").textContent="Please wait…";
+    const {error}=await supa.auth.updateUser({password:pw});
+    $("authBtn").disabled=false;
+    if(error){$("authBtn").textContent=AUTH_TEXT.newpw[2];$("loginErr").textContent=error.message;return;}
+    $("password").value="";setAuthMode("signin");reflectAuth();
+    return;
+  }
+  const name=$("fullName").value.trim();
+  if(authMode==="signup"&&!name){$("loginErr").textContent="Enter your name.";return;}
   if(!email||!pw){$("loginErr").textContent="Enter your email and password.";return;}
   if(authMode==="signup"&&pw.length<6){$("loginErr").textContent="Password must be at least 6 characters.";return;}
   $("authBtn").disabled=true;$("authBtn").textContent="Please wait…";
   let error;
   if(authMode==="signin"){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
   else{
-    const r=await supa.auth.signUp({email,password:pw});error=r.error;
+    const r=await supa.auth.signUp({email,password:pw,options:{data:{full_name:name}}});error=r.error;
     if(!error&&!r.data.session){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
   }
   $("authBtn").disabled=false;setAuthMode(authMode);
   if(error)$("loginErr").textContent=error.message;
 }
 $("authBtn").onclick=doAuth;
+$("forgotBtn").onclick=()=>setAuthMode("reset");
+$("email").addEventListener("keydown",e=>{if(e.key==="Enter"&&authMode==="reset")doAuth();});
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")doAuth();});
 $("swapMode").onclick=()=>setAuthMode(authMode==="signin"?"signup":"signin");
 $("signOutBtn").onclick=async()=>{await supa.auth.signOut();};
@@ -809,7 +857,13 @@ async function initAuth(){
     session=data.session;
   }catch(e){session=null;}
   reflectAuth();
-  try{supa.auth.onAuthStateChange((_e,s)=>{const was=!!session;session=s;if(was!==!!s||!s)reflectAuth();});}catch(e){}
+  try{supa.auth.onAuthStateChange((ev,s)=>{
+    const was=!!session;session=s;
+    /* Arrived from a reset email: ask for the new password before anything else. */
+    if(ev==="PASSWORD_RECOVERY"){setAuthMode("newpw");show("login");return;}
+    if(authMode==="newpw")return;
+    if(was!==!!s||!s)reflectAuth();
+  });}catch(e){}
 }
 window.addEventListener("error",()=>{try{document.getElementById("login").classList.remove("hidden");}catch(e){}});
 

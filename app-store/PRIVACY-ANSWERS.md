@@ -21,7 +21,7 @@ history, and both leave the device. Answering "No" here is a false statement to 
 
 ## Data types to declare
 
-Select exactly these two. Leave every other category unchecked.
+Select exactly these three. Leave every other category unchecked.
 
 ### Contact Info > Email Address
 
@@ -30,10 +30,23 @@ Select exactly these two. Leave every other category unchecked.
 | Collected? | Yes |
 | Used for tracking? | **No** |
 | Linked to the user's identity? | **Yes** |
-| Purpose | **App Functionality** only |
+| Purpose | **App Functionality** and **Developer's Advertising or Marketing** |
 
-Why: an account is created with an email address, and that account is what gates the app
-and syncs scan history across devices. It is not used for marketing, advertising or analytics.
+Why: an account is created with a name and email address; that account gates the app and
+syncs scan history. North Comm may also email users about its products (disclosed in
+privacy.html, with unsubscribe). It is not used for third-party advertising or tracking.
+
+### Contact Info > Name
+
+| Field | Answer |
+|---|---|
+| Collected? | Yes |
+| Used for tracking? | **No** |
+| Linked to the user's identity? | **Yes** |
+| Purpose | **App Functionality** and **Developer's Advertising or Marketing** |
+
+Why: the sign-up form asks for the person's name (added 2026-10-07) so North Comm knows who
+its users are and can address them when it contacts them.
 
 ### Usage Data > Product Interaction
 
