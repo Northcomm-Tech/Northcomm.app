@@ -95,7 +95,7 @@ App Tracking Transparency prompt is needed. Do not add the ATT framework.
 
 Apple requires any app with account creation to offer in-app account deletion.
 
-- The app has it: **Settings > Delete my account**, which calls the `delete_own_account()`
+- The app has it: **Account (top right) > Delete my account**, which calls the `delete_own_account()`
   database function. Your sign-in is destroyed, and your scan history is permanently
   unlinked from you so it can no longer be traced to any person.
 - **This only works once `northcomm-setup.sql` has been run on the Supabase project.** If
@@ -131,7 +131,7 @@ account created in Northcomm's Supabase, kept alive for as long as the app is on
 
 | Field | Value |
 |---|---|
-| Username | (create one, e.g. appreview@northcomm.app) |
+| Username | (create one, e.g. appreview@northcommtechnologies.com) |
 | Password | (set one, and do not change it while a review is open) |
 
 ## Review notes (paste into "Notes" for the reviewer)
@@ -140,13 +140,15 @@ account created in Northcomm's Supabase, kept alive for as long as the app is on
 > manufacturer of the RF cable assemblies it reads. Point the camera at the QR label printed
 > on an assembly and the app opens that unit's factory test report.
 >
-> Sign in with the demo account provided above. To test without physical hardware, tap
+> Sign in with the demo account provided above. Fastest test: type 121484 in "Enter Serial
+> Number Here" and tap Retrieve Report, or scan the sample label at
+> https://northcomm-tech.github.io/Northcomm.app/app-store/review-sample-qr.png from a second screen. To test without physical hardware, tap
 > "Browse reports on file" on the home screen to see the catalogue and open any report
 > directly. To scan a physical label, sign in on a second device, open "Browse reports on file", and point
 > this app's scanner at the QR code shown there.
 >
 > The account is used only to sync scan history. It can be deleted from
-> Settings > Delete my account.
+> Account (top right) > Delete my account.
 
 Before submitting, sign in as the demo account on a real device and confirm that Browse
 loads and a report opens. A reviewer who gets stuck on the first screen will reject the app.

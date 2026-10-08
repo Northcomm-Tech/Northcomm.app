@@ -1,6 +1,6 @@
 {
-  "name": "Ncom Specs",
-  "short_name": "Ncom Specs",
+  "name": "Northcomm ScanSpec",
+  "short_name": "ScanSpec",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#353535",

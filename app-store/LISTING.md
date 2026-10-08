@@ -10,52 +10,61 @@ limited field. No em dashes are used anywhere in the customer-facing copy.
 Character count: 18 / 30
 
 ## Subtitle (limit 30)
-**Scan RF assemblies for specs**
-Character count: 28 / 30
+**Test reports for RF cables**
+Character count: 29 / 30
 
 ## Promotional Text (limit 170)
-**Scan the QR label on any Northcomm RF cable assembly and pull up its factory test report and spec sheet in seconds. Built for field and install crews. Free, no ads.**
-Character count: 164 / 170
+**Scan the QR label on any Northcomm RF cable and pull up the factory test report that shipped with it, in seconds. Built for field and install crews. Free, no ads.**
+Character count: 165 / 170
 
 ## Description (full)
 
-Northcomm ScanSpec is the official spec-lookup tool for North Comm Technologies RF cable assemblies. Scan the QR label on an assembly and instantly open its factory test report and specification sheet. No more digging through paperwork or emails in the field.
+Northcomm ScanSpec is the official test-report app for North Comm Technologies RF cable products. Scan the QR label on a Northcomm product and open the factory test report that shipped with it. No more digging through paperwork or emails in the field.
 
 WHAT IT DOES
 
-Point your camera at the QR label printed on a Northcomm assembly. ScanSpec reads the serial encoded in the code and pulls up the exact document for that unit: the factory test report, the spec sheet, and the details you need to verify and install with confidence.
+Point your camera at the QR label on a Northcomm product. ScanSpec reads the serial number in the code and opens the factory test report for that exact unit, with its pass result and sweep measurements. You can also type the serial number instead of scanning.
 
 BUILT FOR THE FIELD
 
-Whether you are on a tower, in a data center, or on an install site, the information you need is one scan away. The interface is fast and simple so you spend less time searching and more time working.
+Whether you are on a tower, in an equipment room, or on an install site, the report you need is one scan away. The interface is fast and simple so you spend less time searching and more time working.
 
 KEY FEATURES
 
-- Scan a QR label and open the matching factory test report and spec sheet
-- Fast camera-based lookup designed for field and install staff
-- Sign in once to save your scan history across your devices
-- Clean, no-clutter interface
+- Scan a QR label and open that product's factory test report
+- Type a serial number when a label is hard to scan
+- Browse every report on file and print replacement QR labels
+- Your scan history is saved to your account and synced across your devices
 - Free to use, with no ads and no third-party tracking
 
 YOUR ACCOUNT
 
-ScanSpec asks you to sign in with your email address the first time you open it. That account keeps your scan history saved and synced across your devices. It is free, and you can delete your account from inside the app at any time at any time.
+ScanSpec asks you to create a free account the first time you open it. Your account keeps your scan history saved and synced across your devices. You can delete your account from inside the app at any time.
 
 PRIVACY
 
-ScanSpec does not run ads, does not use analytics SDKs, and does not share your data with third parties for advertising. The only data tied to your account is your email address and your own scan history, and both are used solely to make the app work. See the privacy policy for full details.
+ScanSpec does not run ads, does not use analytics SDKs, and does not share your data with third parties. Your account details and scan history are used to run the app, and North Comm Technologies may email you about its products, with an unsubscribe link in every email. See the privacy policy for full details.
 
 ABOUT NORTH COMM TECHNOLOGIES
 
-North Comm Technologies manufactures RF cable assemblies. ScanSpec is provided as a free utility so customers and field crews can retrieve the documentation for those assemblies quickly and reliably.
+North Comm Technologies designs and builds precision RF cable assemblies in Plano, Texas. ScanSpec is provided free so customers and field crews can retrieve the test documentation for their products quickly and reliably.
 
 Questions or issues? Visit the support page linked below.
 
 ---
 
+## Copyright
+**2026 North Comm Technologies**
+
+## What's New (version 1.0)
+**First release: scan a Northcomm QR label or type a serial number to open the product's factory test report.**
+
+---
+
 ## Keywords (limit 100, single comma-separated string)
-**RF,cable,assembly,spec,scan,QR,barcode,test report,datasheet,coax,northcomm,field,install,antenna**
+**RF,cable,assembly,spec,scan,QR,test report,datasheet,coax,VSWR,sweep,insertion loss,field,install**
 Character count: 97 / 100
+(The app name is indexed already, so "northcomm" is not repeated here.)
 
 ## Categories
 - Primary category: **Utilities**
@@ -90,8 +99,8 @@ Answer every content-description question with **None**:
 - Graphic Sexual Content and Nudity: None
 
 Other questionnaire toggles:
-- Unrestricted Web Access: **No** (the app only opens Northcomm assembly documents, not
-  arbitrary web browsing)
+- Unrestricted Web Access: **No** (the app only opens Northcomm test reports and its own
+  support pages, not arbitrary web browsing)
 - Gambling (real): **No**
 - Contests: **No**
 - Made for Kids: **No** (this is a professional tool, not a kids app)
@@ -102,32 +111,23 @@ Result: **4+**
 
 ## App Privacy ("nutrition label")
 
-Declare exactly the two data types below. Everything else: **not collected**.
+Declare exactly the three data types below. Everything else: **not collected**.
+This must match app-store/PRIVACY-ANSWERS.md, privacy.html and ios-extras/PrivacyInfo.xcprivacy.
 
 ### 1. Contact Info > Email Address
-- Collected: **Yes**
-- Linked to the user's identity: **Yes** (it is the account identifier)
-- Used for tracking: **No**
-- Purposes: **App Functionality** only
-  (used to create and access the required account; not used for advertising, analytics,
-  or product personalization)
+- Collected: **Yes** · Linked to identity: **Yes** · Tracking: **No**
+- Purposes: **App Functionality** and **Developer's Advertising or Marketing**
 
-### 2. Usage Data > Product Interaction  (the user's scan history)
-- Collected: **Yes**
-- Linked to the user's identity: **Yes** (tied to the account when signed in)
-- Used for tracking: **No**
-- Purposes: **App Functionality** only
-  (saved so scan history syncs across the user's devices)
+### 2. Contact Info > Name
+- Collected: **Yes** · Linked to identity: **Yes** · Tracking: **No**
+- Purposes: **App Functionality** and **Developer's Advertising or Marketing**
 
-Notes for whoever fills the form:
-- Scan history is declared as **Usage Data > Product Interaction**, matching
-  app-store/PRIVACY-ANSWERS.md. Do not declare Browsing History, User Content, or
-  Identifiers, because the app does not collect those.
-- Answer **No** to "Do you or your third-party partners use data for tracking?" for the
-  whole app. There is no third-party advertising and no analytics SDK.
-- Data is NOT used for Third-Party Advertising, Developer's Advertising, Analytics, or
-  Product Personalization. App Functionality is the only purpose for both types.
-- An account is required to use the app, so both data types are collected from every user.
+### 3. Usage Data > Product Interaction (the user's scan history)
+- Collected: **Yes** · Linked to identity: **Yes** · Tracking: **No**
+- Purposes: **App Functionality** only
+
+Answer **No** to "Do you or your third-party partners use data for tracking?". There is no
+third-party advertising and no analytics SDK.
 
 ---
 
@@ -142,18 +142,27 @@ Notes for whoever fills the form:
    submitting.
 
 2. **App Review notes (paste into the Notes field):**
-   "Northcomm ScanSpec is a free utility for North Comm Technologies, a manufacturer of
-   RF cable assemblies. The app uses the device camera to scan a QR label printed on an
-   assembly. The QR code contains that unit's serial number. The app reads the serial and
-   fetches that assembly's factory test report / spec sheet PDF. An account is required; the demo credentials in App Review Information sign the reviewer in. To test
-   the scanner without a physical label, use the sample QR shown in one of the
-   screenshots (or open the live web version at
-   https://northcomm-tech.github.io/Northcomm.app/). Account deletion is available in-app (requires northcomm-setup.sql to have been run).
-   No ads, no analytics, no third-party tracking."
+   "Northcomm ScanSpec is a free app from North Comm Technologies, a manufacturer of RF
+   cable assemblies. Each product ships with a QR label holding its serial number. The app
+   scans the label and opens that product's factory test report (a PDF).
 
-3. **A scannable sample QR** for the reviewer (a serial that resolves to a real PDF).
-   Include it as a screenshot and/or reference it in the review notes so the reviewer can
-   exercise the scanner on a simulator or second screen.
+   To test without a physical product:
+   1. Sign in with the demo account in App Review Information.
+   2. Scan this sample label from a second screen:
+      https://northcomm-tech.github.io/Northcomm.app/app-store/review-sample-qr.png
+      or type the serial 121484 in "Enter Serial Number Here" and tap Retrieve Report.
+   3. The report for NC-121484 opens with a PASS result.
+
+   Your account keeps your scan history synced across devices. Account deletion: Account
+   (top right) > Delete my account. If the demo account is deleted during review, it can
+   be recreated with the same details. No ads, no analytics, no third-party tracking."
+
+   Before submitting: confirm the demo account signs in on the live app, the sample serial
+   opens its report, and Delete my account works (needs northcomm-setup.sql run first).
+
+3. **Sample QR for the reviewer**: app-store/review-sample-qr.png (encodes
+   https://northcomm-tech.github.io/Northcomm.app/?s=NC-121484, verified to decode). It is
+   served from the live site once this branch is pushed.
 
 4. **Screenshots** at the required sizes (see SCREENSHOTS-TODO.md).
 

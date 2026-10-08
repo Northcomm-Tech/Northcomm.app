@@ -60,11 +60,16 @@ jobs:
         run: |
           PLIST=ios/App/App/Info.plist
           /usr/libexec/PlistBuddy -c \
-            "Add :NSCameraUsageDescription string 'Northcomm ScanSpec uses the camera to scan QR labels on assemblies.'" \
+            "Add :NSCameraUsageDescription string 'Northcomm ScanSpec uses the camera to scan the QR label on a Northcomm product.'" \
             "$PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c \
-            "Set :NSCameraUsageDescription 'Northcomm ScanSpec uses the camera to scan QR labels on assemblies.'" \
+            "Set :NSCameraUsageDescription 'Northcomm ScanSpec uses the camera to scan the QR label on a Northcomm product.'" \
             "$PLIST"
+
+      - name: Light mode only (status bar stays readable on the white header)
+        run: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :UIUserInterfaceStyle string Light" "$PLIST" 2>/dev/null ||           /usr/libexec/PlistBuddy -c "Set :UIUserInterfaceStyle Light" "$PLIST"
 
       - name: Declare export compliance (HTTPS only, no custom crypto)
         run: |
