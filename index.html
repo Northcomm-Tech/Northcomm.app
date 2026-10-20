@@ -634,6 +634,22 @@ const views={home:$("home"),result:$("result"),samples:$("samplesView"),login:$(
   settings:$("settingsView"),cam:$("camView")};
 /* True only inside the Capacitor iOS/Android shell, false in a browser tab. */
 const IS_NATIVE=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform());
+/* Inside the iOS shell, reports and outside links open in the in-app Safari sheet
+   (@capacitor/browser) so the person can close it and land back in the app.
+   In a normal browser tab nothing changes. */
+function openExternal(url,newTab){
+  if(IS_NATIVE){
+    try{window.Capacitor.registerPlugin("Browser").open({url:url});return;}catch(e){}
+  }
+  if(newTab)window.open(url,"_blank","noopener");else location.href=url;
+}
+document.addEventListener("click",e=>{
+  if(!IS_NATIVE)return;
+  const a=e.target.closest&&e.target.closest("a[href]");
+  if(!a)return;
+  const h=a.href||"";
+  if(/^https?:\/\//i.test(h)&&h.indexOf(location.origin)!==0){e.preventDefault();openExternal(h,true);}
+});
 function show(name){for(const k in views)views[k].classList.toggle("hidden",k!==name);window.scrollTo(0,0);}
 
 /* Light mode only -- theme toggle removed. These are kept as harmless no-ops
@@ -970,7 +986,7 @@ async function openResult(code){
         <button class="btn btn-quiet" onclick="startScan()">Scan again</button>
         </div>
       </div>`;
-    if(openUrl){const b=$("openLinkBtn");if(b)b.addEventListener("click",()=>window.open(openUrl,"_blank","noopener"));}
+    if(openUrl){const b=$("openLinkBtn");if(b)b.addEventListener("click",()=>openExternal(openUrl,true));}
   }
   show("result");
 }

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/wingdigital26-maker/northcomm-scanspec#readme",
   "dependencies": {
+    "@capacitor/browser": "8.0.5",
     "@capacitor/cli": "^8.5.1",
     "@capacitor/core": "^8.5.1",
     "@capacitor/ios": "^8.5.1"
