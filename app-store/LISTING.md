@@ -142,6 +142,15 @@ third-party advertising and no analytics SDK.
    submitting.
 
 2. **App Review notes (paste into the Notes field):**
+   WHY AN ACCOUNT IS REQUIRED (add this paragraph at the top of the notes):
+   "North Comm Technologies is a business-to-business manufacturer. Its factory test
+   reports are provided to its customers' installers, not the general public, so the app
+   asks for a free account (name, email, password). The account ties each installer's scan
+   history and support requests to their company, so Northcomm can help the right person
+   when a report or product question comes up. Account creation is self-serve and free,
+   and Delete my account is in Settings (Account, top right). A demo account is provided
+   in App Review Information so no sign-up is needed to review."
+
    "Northcomm ScanSpec is a free app from North Comm Technologies, a manufacturer of RF
    cable assemblies. Each product ships with a QR label holding its serial number. The app
    scans the label and opens that product's factory test report (a PDF).

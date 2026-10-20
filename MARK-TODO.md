@@ -30,6 +30,15 @@ business name. Apple verifies the business first, and that is the slow part.
    Apple's verification takes another 1-3 weeks.
 3. Tell Jack when it is approved. He handles the submission from there.
 
+## For the App Store review: a demo account (about 2 minutes)
+
+Apple's reviewer has to sign in, so they need a login that always works.
+
+1. Open the app (or the live web app) and create a normal account with an address you control,
+   for example appreview@northcommtechnologies.com, and a password you will not change.
+2. Send Jack the email and password. He enters them in App Store Connect under App Review
+   Information. Keep the account alive for as long as the app is on sale.
+
 ## Your everyday step: adding a new report
 
 Do this any time you have a new spec sheet. No developer needed.
