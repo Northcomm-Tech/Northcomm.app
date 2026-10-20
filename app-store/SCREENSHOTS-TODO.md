@@ -1,8 +1,11 @@
 # Northcomm ScanSpec - Screenshots
 
-Status 2026-10-07: the sets in app-store/screenshots and app-store/screenshots-v3 show the
-OLD look (gear icon, rounded buttons). Reshoot after the site-theme restyle, and after Jack
-settles the sign-up fields (name required or optional), because the sign-up screen changes.
+Status 2026-10-20: app-store/screenshots-v4 holds four 1290 x 2796 shots of the CURRENT
+look (home, report, reports on file, camera access). The older sets (screenshots,
+screenshots-v3) show the previous design: do not upload those. Before submitting, retake
+the four on the live app signed in with the demo account so the data is real (v4 was
+rendered from a local copy with stubbed rows for serials NC-121484/87/88/89/90/39/43).
+The create-account screen (shot 5) is optional and not yet taken.
 
 ## Size
 - **6.9" display: 1290 x 2796 px portrait.** For an iPhone-only app this one set is enough;
