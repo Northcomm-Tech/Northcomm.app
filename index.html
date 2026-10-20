@@ -616,7 +616,7 @@
         <span>Zoom</span>
         <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="2" aria-label="Camera zoom">
       </div>
-      <div class="scan-hint" id="scanHint">Point at a <b>QR label</b> &mdash; it reads automatically</div>
+      <div class="scan-hint" id="scanHint">Point at a <b>QR label</b>. It reads automatically.</div>
     </div>
   </div>
 </div>
@@ -1001,7 +1001,7 @@ async function startScanNow(){
       width:{ideal:2560},height:{ideal:1440}
     }});
     const v=$("video");v.srcObject=stream;await v.play();
-    $("scanHint").innerHTML='Point at a <b>QR label</b> &mdash; it reads automatically';
+    $("scanHint").innerHTML='Point at a <b>QR label</b>. It reads automatically.';
     track=stream.getVideoTracks()[0];
     const caps=track.getCapabilities?track.getCapabilities():{};
     /* keep small labels sharp up close */
@@ -1018,8 +1018,8 @@ async function startScanNow(){
     scanning=true;frameNo=0;tick();
   }catch(e){
     $("scanHint").innerHTML=IS_NATIVE
-      ? '<b>Camera access is off.</b> Open Settings &rsaquo; ScanSpec and turn on Camera, then retry &mdash; or enter a part number by hand.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>'
-      : '<b>Camera blocked.</b> Allow camera access in your browser, then retry &mdash; or use a sample code.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
+      ? '<b>Camera access is off.</b> Open Settings &rsaquo; ScanSpec and turn on Camera, then retry, or enter a part number by hand.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>'
+      : '<b>Camera blocked.</b> Allow camera access in your browser, then retry, or enter a part number by hand.<br><button class="retrybtn" onclick="startScan()">Retry camera</button>';
   }
 }
 function setupZoom(range,current){
