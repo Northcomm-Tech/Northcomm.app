@@ -48,3 +48,33 @@ On Windows PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("file.
 
 The `ios/` native project is generated fresh on the Mac runner each build, so it
 is not stored in the repo.
+
+## First signed run checklist
+
+Signing is MANUAL: the workflow imports your Distribution certificate into a temporary
+keychain, installs your App Store profile, and signs with exactly those. Nothing is
+created automatically on Apple's side, so set these up first.
+
+1. In the Apple Developer account, register the App ID `com.northcomm.scanspec`.
+2. Create an **Apple Distribution** certificate, export it as `.p12`, and note its password.
+3. Create an **App Store** provisioning profile for that App ID using that certificate.
+   Download it (`.mobileprovision`).
+4. In App Store Connect, create the app record with the same bundle id.
+5. Create an App Store Connect API key (Users and Access > Integrations), with App Manager
+   access. Save the Issuer ID, Key ID and the `.p8` file.
+6. Add all 7 secrets (table above). If any is missing the workflow builds the unsigned
+   compile proof instead and says how many it found in the "Check for signing secrets" step.
+7. Run **iOS build**. Early failures to expect and what they mean:
+   - "Profile is for X, expected TEAMID.com.northcomm.scanspec": wrong profile or wrong TEAM_ID.
+   - "No identity found" or an empty identity list: the `.p12` is not a Distribution cert,
+     or the password is wrong.
+   - Export error about the profile: the profile was made with a different certificate than the
+     `.p12` you uploaded.
+8. When it passes, the build appears in App Store Connect > TestFlight after Apple's
+   processing (usually under 30 minutes). Install it through TestFlight on a real iPhone and
+   check: camera scan, a report opening in the Safari sheet, Delete my account.
+
+The unsigned compile-proof path is unchanged and still runs with no secrets.
+
+Reports and outside links open in an in-app Safari sheet (`@capacitor/browser`) inside the
+iPhone app; in a normal browser they behave as before.

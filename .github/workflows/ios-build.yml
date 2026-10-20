@@ -6,7 +6,7 @@ name: iOS build
 # WITHOUT signing secrets: it produces an UNSIGNED archive, which proves the app
 # compiles end to end. This is what runs today, before Apple enrollment.
 #
-# WITH signing secrets (add these in the repo: Settings > Secrets and variables >
+# WITH all 7 signing secrets (MANUAL signing: Distribution cert + App Store profile) (add these in the repo: Settings > Secrets and variables >
 # Actions), it also signs, exports a .ipa, and uploads it to App Store Connect:
 #   BUILD_CERTIFICATE_BASE64   - your Apple distribution cert (.p12), base64-encoded
 #   P12_PASSWORD               - the password you set on that .p12
@@ -104,16 +104,26 @@ jobs:
 
       # (CocoaPods runs automatically inside `npx cap sync ios` above.)
 
-      # ---- Detect whether signing secrets are present ----
+      # ---- Detect whether ALL signing secrets are present ----
       - name: Check for signing secrets
         id: signing
+        env:
+          S1: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          S2: ${{ secrets.P12_PASSWORD }}
+          S3: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+          S4: ${{ secrets.APPSTORE_ISSUER_ID }}
+          S5: ${{ secrets.APPSTORE_KEY_ID }}
+          S6: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          S7: ${{ secrets.TEAM_ID }}
         run: |
-          if [ -n "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" ] && [ -n "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" ]; then
+          have=0
+          for v in "$S1" "$S2" "$S3" "$S4" "$S5" "$S6" "$S7"; do [ -n "$v" ] && have=$((have+1)); done
+          if [ "$have" -eq 7 ]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
-            echo "Signing secrets found: will build a signed, uploadable build."
+            echo "All 7 signing secrets found: will build a signed, uploadable build."
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "No signing secrets: building an UNSIGNED archive (compile proof only)."
+            echo "Found $have of 7 signing secrets: building an UNSIGNED archive (compile proof only)."
           fi
 
       # ---- Path A: no secrets yet -> prove it compiles ----
@@ -130,23 +140,71 @@ jobs:
             MARKETING_VERSION=$APP_VERSION CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
-      # ---- Path B: secrets present -> sign, export, upload ----
-      - name: Import signing certificate
+      # ---- Path B: all secrets present -> MANUAL signing, export, upload ----
+      - name: Import signing certificate into a temporary keychain
         if: steps.signing.outputs.available == 'true'
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.P12_PASSWORD }}
-
-      - name: Install provisioning profile
-        if: steps.signing.outputs.available == 'true'
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
-            > ~/Library/MobileDevice/Provisioning\ Profiles/northcomm.mobileprovision
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PW="$(uuidgen)"
+          echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PW" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PW" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PW" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/cert.p12"
+          echo "Identities in the keychain:"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+          echo "SIGNING_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+
+      - name: Install provisioning profile and read its name + UUID
+        if: steps.signing.outputs.available == 'true'
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+          security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$RUNNER_TEMP/profile.plist")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" "$RUNNER_TEMP/profile.plist")
+          APP_ID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" "$RUNNER_TEMP/profile.plist")
+          echo "Profile: $PROFILE_NAME ($PROFILE_UUID) for $APP_ID"
+          # Fail early with a clear message if the wrong profile was supplied.
+          [ "$APP_ID" = "$TEAM_ID.com.northcomm.scanspec" ] || { echo "Profile is for '$APP_ID', expected '$TEAM_ID.com.northcomm.scanspec'"; exit 1; }
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$RUNNER_TEMP/profile.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+
+      - name: Set manual signing on the App target
+        if: steps.signing.outputs.available == 'true'
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          # Set on the App target only (not on every package/pod), so
+          # dependencies are not forced onto the app's provisioning profile.
+          ruby -e '
+            require "xcodeproj"
+            proj = Xcodeproj::Project.open("ios/App/App.xcodeproj")
+            target = proj.targets.find { |t| t.name == "App" }
+            target.build_configurations.each do |c|
+              c.build_settings["CODE_SIGN_STYLE"] = "Manual"
+              c.build_settings["DEVELOPMENT_TEAM"] = ENV["TEAM_ID"]
+              c.build_settings["PROVISIONING_PROFILE_SPECIFIER"] = ENV["PROFILE_NAME"]
+              c.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution"
+            end
+            proj.save
+          '
+          grep -q "CODE_SIGN_STYLE = Manual" ios/App/App.xcodeproj/project.pbxproj
 
       - name: Build + sign archive
         if: steps.signing.outputs.available == 'true'
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
           xcodebuild \
             -project ios/App/App.xcodeproj \
@@ -156,39 +214,59 @@ jobs:
             -archivePath build/App.xcarchive \
             archive \
             MARKETING_VERSION=$APP_VERSION CURRENT_PROJECT_VERSION=${{ github.run_number }} \
-            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
-            -allowProvisioningUpdates
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            OTHER_CODE_SIGN_FLAGS="--keychain $SIGNING_KEYCHAIN"
 
       - name: Export .ipa
         if: steps.signing.outputs.available == 'true'
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
           cat > build/ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-            <key>method</key><string>app-store</string>
-            <key>teamID</key><string>${{ secrets.TEAM_ID }}</string>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>$TEAM_ID</string>
             <key>uploadSymbols</key><true/>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.northcomm.scanspec</key><string>$PROFILE_NAME</string>
+            </dict>
           </dict>
           </plist>
           EOF
           xcodebuild -exportArchive \
             -archivePath build/App.xcarchive \
             -exportOptionsPlist build/ExportOptions.plist \
-            -exportPath build/export \
-            -allowProvisioningUpdates
+            -exportPath build/export
+          ls build/export/*.ipa
 
       - name: Upload to App Store Connect
         if: steps.signing.outputs.available == 'true'
+        env:
+          APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
         run: |
           mkdir -p ~/private_keys
-          echo "${{ secrets.APPSTORE_PRIVATE_KEY }}" > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          printf '%s\n' "$APPSTORE_PRIVATE_KEY" > ~/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8
           IPA=$(ls build/export/*.ipa | head -1)
           xcrun altool --upload-app -f "$IPA" -t ios \
-            --apiKey ${{ secrets.APPSTORE_KEY_ID }} \
-            --apiIssuer ${{ secrets.APPSTORE_ISSUER_ID }}
+            --apiKey "$APPSTORE_KEY_ID" \
+            --apiIssuer "$APPSTORE_ISSUER_ID"
+
+      - name: Remove signing material from the runner
+        if: always() && steps.signing.outputs.available == 'true'
+        run: |
+          [ -n "$SIGNING_KEYCHAIN" ] && security delete-keychain "$SIGNING_KEYCHAIN" || true
+          rm -rf ~/private_keys "$HOME/Library/MobileDevice/Provisioning Profiles"
 
       - name: Save build artifact
         uses: actions/upload-artifact@v4
