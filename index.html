@@ -511,10 +511,6 @@
         <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>The serial number is printed on the product's label</span>
       </div>
       <button class="btn btn-quiet hidden" id="sampleBtn">Browse reports on file</button>
-      <div class="installhint hidden" id="installHint">
-        <span>Tap <b>Share, then Add to Home Screen</b> to keep Northcomm ScanSpec one tap away.</span>
-        <button class="x" id="installX" aria-label="Dismiss">&times;</button>
-      </div>
     </div>
     <div class="recent">
       <div class="head">
@@ -1217,11 +1213,7 @@ $("manualInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitManual(
 
 /* install hint (hide if already installed / dismissed) */
 (function(){
-  const standalone=matchMedia("(display-mode:standalone)").matches||navigator.standalone;
-  /* Inside the native app this prompt is nonsense and reads to Apple like a wrapped website. */
-  if(!IS_NATIVE&&!standalone&&!localStorage.getItem("northcomm_hint_dismissed"))$("installHint").classList.remove("hidden");
   maybeShowApple();
-  $("installX").onclick=()=>{$("installHint").classList.add("hidden");localStorage.setItem("northcomm_hint_dismissed","1");};
 })();
 
 /* offline: register service worker */
