@@ -439,6 +439,7 @@
   .login .forgot{align-self:flex-start;background:none;border:none;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--orange);cursor:pointer;padding:0;min-height:44px;margin:-8px 0 -8px;text-decoration:underline}
   .login .err.ok{color:var(--pass)}
   /* ================= /SITE THEME ================= */
+.optin{display:flex;gap:10px;align-items:center;font-size:14px;margin:4px 0 12px}.optin input{width:20px;height:20px}
 </style>
 
 <div class="app">
@@ -464,9 +465,10 @@
       </button>
       <div class="authdiv hidden" id="authDivider">or</div>
       <div class="field hidden" id="nameField">
-        <label for="fullName">Name</label>
+        <label for="fullName">Name (optional)</label>
         <input id="fullName" type="text" autocomplete="name" autocapitalize="words" placeholder="Your full name">
       </div>
+      <label class="optin hidden" id="optinField"><input id="newsOptin" type="checkbox"> Send me Northcomm product news (optional)</label>
       <div class="field" id="emailField">
         <label for="email">Email</label>
         <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" autocapitalize="none">
@@ -750,6 +752,7 @@ function setAuthMode(m){
     :'New here? <button id="swapMode">Create an account</button>';
   $("swapMode").onclick=()=>setAuthMode(m==="signin"?"signup":"signin");
   $("nameField").classList.toggle("hidden",m!=="signup");
+  $("optinField").classList.toggle("hidden",m!=="signup");
   $("loginErr").textContent="";
   $("loginWhy").classList.toggle("hidden",m==="reset"||m==="newpw");
 }
@@ -782,14 +785,13 @@ async function doAuth(){
     return;
   }
   const name=$("fullName").value.trim();
-  if(authMode==="signup"&&!name){$("loginErr").textContent="Enter your name.";return;}
   if(!email||!pw){$("loginErr").textContent="Enter your email and password.";return;}
   if(authMode==="signup"&&pw.length<6){$("loginErr").textContent="Password must be at least 6 characters.";return;}
   $("authBtn").disabled=true;$("authBtn").textContent="Please wait…";
   let error;
   if(authMode==="signin"){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
   else{
-    const r=await supa.auth.signUp({email,password:pw,options:{data:{full_name:name}}});error=r.error;
+    const r=await supa.auth.signUp({email,password:pw,options:{data:{full_name:name,news_optin:$("newsOptin").checked,news_optin_at:$("newsOptin").checked?new Date().toISOString():null}}});error=r.error;
     if(!error&&!r.data.session){({error}=await supa.auth.signInWithPassword({email,password:pw}));}
   }
   $("authBtn").disabled=false;setAuthMode(authMode);
